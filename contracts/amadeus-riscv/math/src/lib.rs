@@ -156,4 +156,55 @@ mod tests {
         assert!(a.minted>0&&a.base<=500_000&&a.ama<=1_700_000);
         assert_eq!(add_liquidity(0,100,100,100,100,1),Err(AmmError::ZeroLiquidity));
     }
+    #[test] fn adversarial_fee_and_price_impact_window() {
+        let rin = 10_000_000u128;
+        let rout = 25_000_000u128;
+        let low = quote_exact_in(rin, rout, 1_000, 1).unwrap();
+        let high = quote_exact_in(rin, rout, 1_000_000, 1).unwrap();
+        assert!(high.out > low.out);
+        assert!(high.k_after >= high.k_before);
+        assert!(low.k_after >= low.k_before);
+        assert_eq!(low.reserve_in, rin + 1_000);
+        assert_eq!(high.reserve_out + high.out, rout);
+        assert_eq!(quote_exact_in(rin, rout, 1_000_000, high.out + 1), Err(AmmError::Slippage));
+    }
+    #[test] fn adversarial_lp_withdrawal_keeps_permanently_locked_shares() {
+        let first = initial_liquidity(4_000_000, 9_000_000).unwrap();
+        let supply = first.minted + first.locked;
+        assert_eq!(first.locked, MIN_LOCKED_LP);
+        let second = add_liquidity(4_000_000, 9_000_000, supply, 1_000_000, 2_250_000, 1).unwrap();
+        assert!(second.minted > 0);
+        let full = supply + second.minted;
+        let amount = remove_liquidity(4_000_000 + second.base,9_000_000 + second.ama,full,full - MIN_LOCKED_LP,1,1).unwrap();
+        assert_eq!(amount.lp_remaining, MIN_LOCKED_LP);
+        assert_eq!(remove_liquidity(4_000_000,9_000_000,supply,supply,1,1), Err(AmmError::Locked));
+        assert_eq!(remove_liquidity(4_000_000,9_000_000,supply,1,1_000_000,1), Err(AmmError::Slippage));
+    }
+    #[test] fn adversarial_reserve_cap_overflow_underflow_and_zero_cases() {
+        assert_eq!(quote_exact_in(MAX_RESERVE, MAX_RESERVE, 1, 1), Err(AmmError::Overflow));
+        assert_eq!(quote_exact_in(MAX_RESERVE - 1, 1, 2, 1), Err(AmmError::Overflow));
+        assert_eq!(quote_exact_in(0, 1_000, 100, 1), Err(AmmError::ZeroLiquidity));
+        assert_eq!(initial_liquidity(1,1), Err(AmmError::Dust));
+        assert_eq!(add_liquidity(1, 0, 1, 1, 1, 1), Err(AmmError::ZeroLiquidity));
+        assert_eq!(remove_liquidity(1_000,1_000,1_001,1_002,1,1), Err(AmmError::Locked));
+    }
+    #[test] fn adversarial_seeded_integer_property_4000_cases() {
+        let mut x: u64 = 0xA11CE1F;
+        for _ in 0..4_000 {
+            x ^= x << 13; x ^= x >> 7; x ^= x << 17;
+            let base = 10_000 + (x % 50_000_000) as u128;
+            x ^= x << 13; x ^= x >> 7; x ^= x << 17;
+            let ama = 10_000 + (x % 50_000_000) as u128;
+            x ^= x << 13; x ^= x >> 7; x ^= x << 17;
+            let input = 1 + (x % 200_000) as u128;
+            if let Ok(q) = quote_exact_in(base, ama, input, 1) {
+                assert!(q.out > 0 && q.out < ama);
+                assert_eq!(q.reserve_out + q.out, ama);
+                assert_eq!(q.reserve_in, base + input);
+                assert!(q.k_after >= q.k_before);
+                assert!(q.k_before > 0);
+            }
+        }
+    }
+
 }
