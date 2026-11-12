@@ -2,6 +2,7 @@
 import * as React from "react";
 
 import {useCallback,useEffect,useRef,useState} from "react";
+import { DemoChart, DepthPanel, handleTabKeys } from "./TerminalMarketVisuals";
 import type {NativeTerminalData} from "@/lib/terminal/read";
 import type {NativeSpotQuote,SpotSide} from "@/lib/spot/quote";
 
@@ -21,11 +22,12 @@ type QuoteResponse = {
 };
 
 export function MarketTerminal({
-  base,account,rpcHealthy,
+  base,account,rpcHealthy,marketSelector,
 }:{
   base:"TESTBTC"|"TESTUSD";
   account:string|null;
   rpcHealthy:boolean;
+  marketSelector?: React.ReactNode;
 }){
   const [market,setMarket]=useState<NativeTerminalData|null>(null);
   const [status,setStatus]=useState<"loading"|"ready"|"blocked"|"unavailable">("loading");
@@ -38,6 +40,8 @@ export function MarketTerminal({
   const [quoteBusy,setQuoteBusy]=useState(false);
   const [bottomTab,setBottomTab]=useState<"activity"|"balances"|"pool">("activity");
   const quoteEpoch=useRef(0);
+  const [simulated, setSimulated] = useState(false);
+  const [interval, setInterval] = useState("1M");
 
   useEffect(()=>{
     let active=true;
@@ -123,10 +127,12 @@ export function MarketTerminal({
     status==="loading"?"Checking chain state…":"Chain data unavailable";
   return <section className="exTerminal" id="m9-terminal" aria-label="Native Amadeus spot terminal">
     <div className="exPairBar">
+      {marketSelector}
       <div className="exPairIdentity">
         <span className="exPairCoin" aria-hidden="true">{base==="TESTBTC"?"TB":"TU"}</span>
         <div><h1>{base}<span>/AMA</span></h1><small>Native AMM · Spot</small></div>
       </div>
+      <button type="button" className="tdPreviewToggle" aria-pressed={simulated} onClick={() => setSimulated(value => !value)}>{simulated ? "Simulated preview · ON" : "View simulated preview"}</button>
       <div className="exPairLast"><span>Last price</span><strong>—</strong><small>No verified price</small></div>
       <div className="exPairStat"><span>24h change</span><strong>—</strong></div>
       <div className="exPairStat"><span>24h volume</span><strong>—</strong></div>
@@ -146,12 +152,10 @@ export function MarketTerminal({
         <section className="exChartPanel" aria-label="Historical market chart">
           <div className="exPanelTop">
             <div className="exPanelTitle"><strong>Price chart</strong><span className="exPanelDivider">|</span><span>{base}/AMA</span></div>
-            <span className="exChartControlDisabled" title="Historical chart intervals require verified price observations">
-              15m&nbsp;&nbsp; 1H&nbsp;&nbsp; 4H&nbsp;&nbsp; 1D
-            </span>
-            <span className="exChartDataBadge">Historical data unavailable</span>
+            <div className="tdIntervals" role="group" aria-label="Simulated chart interval">{["1M", "5M", "15M", "1H", "1D"].map(value => <button key={value} type="button" disabled={!simulated} aria-pressed={interval === value} onClick={() => setInterval(value)}>{value}</button>)}</div>
+            <span className="exChartDataBadge">{simulated ? "SIMULATED / NOT LIVE" : "Historical data unavailable"}</span>
           </div>
-          <div className="exChartView" role="status" aria-label="No independently verified historical spot price series">
+          {simulated ? <DemoChart base={base} interval={interval} /> : <div className="exChartView" role="status" aria-label="No independently verified historical spot price series">
             <div className="exChartGridBg" aria-hidden="true"/>
             <div className="exChartAxisY" aria-hidden="true"><span>—</span><span>—</span><span>—</span><span>—</span><span>—</span></div>
             <div className="exChartOverlay">
@@ -162,11 +166,11 @@ export function MarketTerminal({
               <p>No finalized price history exists for this verified market yet. Candles will appear only from real archived reserve observations.</p>
               <a href="/demo">Check deployment readiness ↗</a>
             </div>
-            <div className="exChartBrand" aria-hidden="true">SYMBIOTIC</div>
-          </div>
+            <div className="exChartBrand" aria-hidden="true">SYMBASIS</div>
+          </div>}
           <div className="exChartBottom">
             <span>HISTORICAL PRICE · NOT AVAILABLE</span>
-            <span>Zero simulated candles</span>
+            <span>{simulated ? "Design preview · Not used for quotes" : "Zero simulated candles"}</span>
           </div>
         </section>
 
@@ -178,12 +182,12 @@ export function MarketTerminal({
         </section>
 
         <section id="exchange-activity" className="exActivityPanel" aria-label="Account, activity and pool information">
-          <div className="exActivityTabs" role="tablist" aria-label="Terminal details">
-            <button type="button" role="tab" aria-selected={bottomTab==="activity"}
+          <div className="exActivityTabs" role="tablist" aria-label="Terminal details" onKeyDown={handleTabKeys}>
+            <button type="button" role="tab" tabIndex={bottomTab==="activity"?0:-1} aria-selected={bottomTab==="activity"}
               className={bottomTab==="activity"?"exActivityActive":""} onClick={()=>setBottomTab("activity")}>On-chain activity</button>
-            <button type="button" role="tab" aria-selected={bottomTab==="balances"}
+            <button type="button" role="tab" tabIndex={bottomTab==="balances"?0:-1} aria-selected={bottomTab==="balances"}
               className={bottomTab==="balances"?"exActivityActive":""} onClick={()=>setBottomTab("balances")}>Wallet balances</button>
-            <button type="button" role="tab" aria-selected={bottomTab==="pool"}
+            <button type="button" role="tab" tabIndex={bottomTab==="pool"?0:-1} aria-selected={bottomTab==="pool"}
               className={bottomTab==="pool"?"exActivityActive":""} onClick={()=>setBottomTab("pool")}>Pool overview</button>
           </div>
           {bottomTab==="activity"&&<div className="exActivityBody">
@@ -216,6 +220,7 @@ export function MarketTerminal({
         </section>
       </div>
 
+      <DepthPanel base={base} simulated={simulated} />
       <aside className="exTicket" aria-label="Spot trading ticket">
         <div className="exTicketHeading"><strong>Spot trade</strong><span>TESTNET · READ ONLY</span></div>
         <div className="exSideSwitch" role="group" aria-label="Spot order side">
