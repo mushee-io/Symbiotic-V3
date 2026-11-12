@@ -178,7 +178,7 @@ mod tests {
         let amount = remove_liquidity(4_000_000 + second.base,9_000_000 + second.ama,full,full - MIN_LOCKED_LP,1,1).unwrap();
         assert_eq!(amount.lp_remaining, MIN_LOCKED_LP);
         assert_eq!(remove_liquidity(4_000_000,9_000_000,supply,supply,1,1), Err(AmmError::Locked));
-        assert_eq!(remove_liquidity(4_000_000,9_000_000,supply,1,1_000_000,1), Err(AmmError::Slippage));
+        assert_eq!(remove_liquidity(4_000_000,9_000_000,supply,1_000,1_000_000,1), Err(AmmError::Slippage));
     }
     #[test] fn adversarial_reserve_cap_overflow_underflow_and_zero_cases() {
         assert_eq!(quote_exact_in(MAX_RESERVE, MAX_RESERVE, 1, 1), Err(AmmError::Overflow));
