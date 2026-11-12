@@ -12,6 +12,7 @@ import {
   type WalletNetworkState,
 } from "@/lib/amadeus-wallet";
 import { TokenIssuancePanel } from "@/components/TokenIssuancePanel";
+import { NativeSpotPanel } from "@/components/NativeSpotPanel";
 import { NativeLiquidityPanel } from "@/components/NativeLiquidityPanel";
 
 type BalanceResult = { amount: string; checkedAt: string; address: string };
@@ -239,6 +240,7 @@ export function AmadeusWalletPanel({ rpcHealthy }: { rpcHealthy: boolean }) {
       </div>
       <TokenIssuancePanel provider={provider} account={account} network={network} rpcHealthy={rpcHealthy} />
       <NativeLiquidityPanel provider={provider} account={account} network={network} rpcHealthy={rpcHealthy} />
+      <NativeSpotPanel provider={provider} account={account} network={network} rpcHealthy={rpcHealthy} />
     </section>
   );
 }
