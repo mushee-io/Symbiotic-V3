@@ -26,7 +26,7 @@ fn add(a: u128, b: u128, max: u128) -> Result<u128, AmmError> {
 pub fn integer_sqrt(v: u128) -> u128 {
     if v < 2 { return v; }
     let mut x = v;
-    let mut y = (x + 1) / 2;
+    let mut y = x / 2 + 1;
     while y < x { x = y; y = (x + v / x) / 2; }
     x
 }
