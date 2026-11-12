@@ -20,6 +20,8 @@ jobs:
       - run: npm install --no-audit --no-fund
       - run: npm run typecheck
       - run: npm test
+      - name: Test portable native RISC-V AMM mathematics (Rust no_std host tests)
+        run: cargo test --manifest-path contracts/amadeus-riscv/math/Cargo.toml --offline
       - run: npm run build
       - name: Live Amadeus testnet RPC smoke test (nonblocking)
         # A public testnet outage should not mask successful deterministic tests.

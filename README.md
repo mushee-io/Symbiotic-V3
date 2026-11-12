@@ -8,7 +8,7 @@
 - **AMA-only quote currency:** every token launched or listed by Symbiotic V3 will pair against native **AMA**. No alternative quote tokens or cross-chain settlement in the MVP.
 - **AI liquidity and execution tools:** an AI-powered market-making agent is planned for M10, **not yet operational**. It will use real pool liquidity, strict operator-defined risk limits and verifiable transactions. No artificial trading volume.
 - **Future markets:** Perpetuals, RWA, Notional and Options are **Coming Soon** and cannot execute orders.
-- **Smart contracts:** native Amadeus WASM contract integration; this project does not use an imported foreign-chain execution environment.
+- **Smart contracts:** native Amadeus RISC-V ELF contract integration; this project does not use an imported foreign-chain execution environment.
 
 ## Present implementation
 
@@ -43,7 +43,8 @@ See the [12 detailed milestones](docs/roadmap.md) and [M1–M12 GitHub tracking 
 **M2:** Verify native testnet connectivity and runtime failure modes.  
 **M3:** Native extension discovery, opt-in account connection, local disconnect and live AMA testnet balance reads are implemented; the two-wallet witness and network-attestation gate remain pending. See [M3 wallet guide](docs/m3-native-wallet.md).  
 **M4:** Two strictly AMA-quoted test token definitions, read-only Coin registry, wallet-approved transaction construction and finalized mint verification (live mint witness pending). [M4 issuance guide](docs/m4-native-tokens.md).  
-**M5–M9:** Native AMM, pools, real liquidity and spot trading.  
+**M5:** Deterministic constant-product AMM and a portable native-RISC-V Rust math reference, with two AMA-only pools and locked LP share design. No deployed contracts or live markets. See [M5 AMM architecture](docs/m5-native-amm.md).  
+**M6–M9:** Deploy native pools, seed verified liquidity and activate actual on-chain spot transactions.  
 **M10–M12:** Guardrailed AI market making, security and public testnet demo.
 
 ## Sources
