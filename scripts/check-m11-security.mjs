@@ -4,6 +4,7 @@ import crypto from "node:crypto";
 
 const read = (path) => fs.readFileSync(new URL("../" + path, import.meta.url), "utf8");
 const guest=read("contracts/amadeus-riscv/pools/examples/pool.rs");
+const initializerBuild=read("contracts/amadeus-riscv/pools/build.rs");
 const host=read("contracts/amadeus-riscv/pools/src/lib.rs");
 const math=read("contracts/amadeus-riscv/math/src/lib.rs");
 const deployments=read("lib/liquidity/deployments.ts");
@@ -17,7 +18,7 @@ const hostSecurity=read("contracts/amadeus-riscv/pools/src/security.rs");
 
 const assertions={
   exactlyTwoCompileTimeNativeBaseFeatures:guest.includes('b"TESTBTC"')&&guest.includes('b"TESTUSD"')&&guest.includes("compile_error!"),
-  publicGuestsHaveUnboundInitializer:guest.includes("const APPROVED_INITIALIZER: [u8; h::KEY_BYTES] = [0u8; h::KEY_BYTES]")&&guest.includes("h::authorized_initializer(&owner, &APPROVED_INITIALIZER)"),
+  publicGuestsHaveUnboundInitializer:guest.includes('include!(concat!(env!("OUT_DIR"), "/pool_initializer.rs"))')&&guest.includes("h::authorized_initializer(&owner, &APPROVED_INITIALIZER)")&&initializerBuild.includes("Err(env::VarError::NotPresent) => [0u8; 48]")&&initializerBuild.includes("decode_base58_48(&address).expect"),
   nativeEntryHeightWindow:host.includes("pub const MAX_DEADLINE_AHEAD: u64 = 20")&&host.includes("deadline_is_valid(chain_height(), deadline as u64)"),
   nativeGuardStateBeforeCoinTransfer:guest.includes("h::lock();")&&guest.includes("h::unlock();")&&guest.includes("h::native_coin_transfer"),
   nativeCoinAttachRejection:host.includes("decode_coins")&&host.includes("AttachmentError::Duplicate")&&host.includes("AttachmentError::UnexpectedSymbol"),
@@ -36,7 +37,7 @@ const assertions={
 const failing=Object.entries(assertions).filter(([,ok])=>!ok).map(([name])=>name);
 assert.deepEqual(failing,[], "Security invariant checks failed: "+failing.join(", "));
 const digest=crypto.createHash("sha256").update(
-  [guest,host,math,deployments,swap,liquidity,swapReceipt,agent,wallet,issuance,hostSecurity].join("\n")
+  [guest,initializerBuild,host,math,deployments,swap,liquidity,swapReceipt,agent,wallet,issuance,hostSecurity].join("\n")
 ).digest("hex");
 process.stdout.write(JSON.stringify({
   schema:"symbiotic.m11.security-source-check.v1",
