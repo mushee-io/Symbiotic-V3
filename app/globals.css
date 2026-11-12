@@ -83,3 +83,70 @@
 .agentActions{border-top:1px solid var(--border);padding:16px 20px;display:flex;flex-wrap:wrap;gap:10px}
 .agentActions button{font-size:11px}
 @media(max-width:600px){.agentGrid{grid-template-columns:1fr}.agentTitle{align-items:flex-start}}
+
+
+/* M12: evidence-led native public testnet launch; no decorative market charts. */
+html{scroll-behavior:smooth}
+body{background:radial-gradient(ellipse 60% 470px at 75% -180px,rgba(201,255,61,.095),transparent 75%),var(--bg)}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.demoAccent,.demoHero h1 span{color:var(--accent)}
+.hero h1{line-height:1.02}
+.hero{padding:34px 0 24px}
+.hero p{max-width:710px}
+.demoHeroDisclaimer{font-size:10px!important;letter-spacing:.11em;color:var(--accent)!important;margin:17px 0 0!important}
+.demoHero{padding:70px 0 60px;max-width:900px}
+.demoHero h1{font-size:clamp(44px,7vw,91px);letter-spacing:-.072em;line-height:.97;margin:18px 0 24px;font-weight:800}
+.demoHero h1 span{color:var(--accent)}
+.demoHero>p{font-size:clamp(14px,2vw,18px);line-height:1.75;color:var(--muted);max-width:610px}
+.demoHeroLinks{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:24px}
+.demoPrimary,.demoSecondary{border:1px solid var(--accent);border-radius:4px;padding:14px 20px;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;min-height:45px}
+.demoPrimary{background:var(--accent);color:var(--bg)}
+.demoSecondary{color:var(--accent);background:transparent}
+.demoPanel{overflow:hidden;margin-bottom:24px;border-radius:6px}
+.demoPanelHead{padding:28px;display:flex;align-items:flex-start;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.demoPanelHead h2{font-size:clamp(23px,3vw,35px);margin:8px 0 10px;letter-spacing:-.045em}
+.demoPanelHead p.muted{font-size:13px;max-width:650px;line-height:1.65;margin:0}
+.demoStatusStrip{display:flex;flex-wrap:wrap;align-items:center;gap:11px;background:var(--bg);border-block:1px solid var(--border);padding:14px 26px;font-size:12px;color:var(--muted)}
+.demoStatusStrip strong{color:var(--ink)}
+.demoDot{width:9px;height:9px;display:inline-block;border-radius:50%;background:var(--accent);box-shadow:0 0 14px rgba(201,255,61,.25)}
+.demoNoTrade{color:#f5be80;margin-left:auto}
+.demoMarketGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--border);border-bottom:1px solid var(--border)}
+.demoMarketCard{min-width:0;background:var(--panel);padding:25px}
+.demoMarketName{display:flex;align-items:center;justify-content:space-between;gap:9px;flex-wrap:wrap;padding-bottom:19px;border-bottom:1px solid var(--border)}
+.demoMarketName strong{font-size:22px;letter-spacing:-.04em}
+.demoMarketName small{font-size:10px;color:var(--accent);letter-spacing:.1em}
+.demoMarketCard dl{margin:12px 0}
+.demoMarketCard dl>div{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid rgba(143,158,145,.13);font-size:12px}
+.demoMarketCard dt{color:var(--muted)}
+.demoMarketCard dd{margin:0;text-align:right;max-width:60%;overflow-wrap:anywhere}
+.demoTextLink{font-size:12px;color:var(--accent);text-decoration:underline}
+.demoSplit{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr)}
+.demoChecks{border-right:1px solid var(--border)}
+.demoChecks h3,.demoEvidence h3{font-size:14px;font-weight:700;margin:0;padding:22px 25px;border-bottom:1px solid var(--border)}
+.demoCheck{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 24px;border-bottom:1px solid rgba(143,158,145,.1);font-size:12px}
+.demoCheck a{color:var(--accent);font-size:11px}
+.demoCheckMark{color:var(--accent);font-weight:700}
+.demoCheckBlocked{color:var(--muted);font-weight:700}
+.demoEvidence{min-width:0;padding-bottom:18px}
+.demoEvidence>p,.demoEvidence>.demoDigest{display:block;font-size:12px;margin:16px 25px;line-height:1.6;overflow-wrap:anywhere}
+.demoEvidence code,.demoDigest{font-size:11px}
+.demoDigest{padding:12px;background:var(--bg);color:var(--accent);border:1px solid var(--border);border-radius:4px}
+.demoDisclaimer{font-size:11px!important;line-height:1.6}
+.demoLinks{display:flex;gap:12px;flex-wrap:wrap;margin:22px 25px 5px;font-size:12px}
+.demoLinks a{color:var(--accent);text-decoration:underline}
+.demoFooter{border-top:1px solid var(--border);padding:20px 25px;font-size:11px;color:var(--muted);line-height:1.7;margin:0}
+.demoNarrative{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:24px 0}
+.demoNarrative article{border:1px solid var(--border);background:var(--panel);padding:28px;min-width:0}
+.demoNarrative small{color:var(--accent);letter-spacing:.08em;font-size:10px}
+.demoNarrative h2{font-size:clamp(20px,2.8vw,32px);line-height:1.1;letter-spacing:-.045em;margin:17px 0}
+.demoNarrative p{font-size:12px;color:var(--muted);line-height:1.75}
+.demoNext{background:linear-gradient(110deg,#182d21,#0b1514);border:1px solid var(--border);padding:30px;display:flex;justify-content:space-between;align-items:center;gap:28px;flex-wrap:wrap}
+.demoNext>div{max-width:600px}
+.demoNext h2{font-size:clamp(22px,3vw,35px);letter-spacing:-.05em;margin:15px 0}
+.demoNext p:not(.eyebrow){color:var(--muted);font-size:13px;line-height:1.7}
+.demoFootNav{margin:24px 0 0;border-top:1px solid var(--border);padding:18px 0;display:flex;flex-wrap:wrap;align-items:center;gap:16px;font-size:12px;color:var(--muted)}
+.demoFootNav a:hover,.links a:hover{color:var(--accent)}
+.demoFootNav span{margin-left:auto}
+@media(max-width:760px){.demoSplit{grid-template-columns:1fr}.demoChecks{border-right:0;border-bottom:1px solid var(--border)}.demoNarrative{grid-template-columns:1fr}.demoHero{padding:43px 0}.demoPanelHead{padding:22px}.demoMarketGrid{grid-template-columns:1fr}.demoMarketCard{padding:20px}.demoNoTrade{margin-left:0}.demoFootNav span{margin-left:0}}
+@media(max-width:480px){.shell{padding:16px}.hero{padding:28px 0 20px}.demoHero h1{font-size:clamp(40px,12vw,56px)}.demoPrimary,.demoSecondary{width:100%}.demoCheck{padding-inline:15px}.demoEvidence>p,.demoEvidence>.demoDigest{margin-inline:15px}.demoLinks{margin-inline:15px}.demoNext{padding:21px}.header{padding:14px}.links{gap:10px;flex-wrap:wrap}.headerWalletLink{font-size:10px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
