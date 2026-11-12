@@ -10,8 +10,6 @@ const paths=[
   "app/demo/page.tsx",
   "app/page.tsx",
   "app/trade/page.tsx",
-  "app/trade/onchain/page.tsx",
-  "app/sandbox/page.tsx",
   "components/TerminalShell.tsx",
   "lib/markets.ts",
   "lib/liquidity/deployments.ts",
@@ -27,8 +25,6 @@ const component=inputs["components/DemoReadinessPanel.tsx"];
 const demoPage=inputs["app/demo/page.tsx"];
 const landing=inputs["app/page.tsx"];
 const trade=inputs["app/trade/page.tsx"];
-const nativeTrade=inputs["app/trade/onchain/page.tsx"];
-const sandbox=inputs["app/sandbox/page.tsx"];
 const terminalShell=inputs["components/TerminalShell.tsx"];
 const markets=inputs["lib/markets.ts"];
 const deployments=inputs["lib/liquidity/deployments.ts"];
@@ -38,10 +34,8 @@ const grant=inputs["docs/m12-amadeus-ecosystem-proposal.md"];
 const checks={
   separateHomepageAndSpotTerminal: (landing.includes('href="/trade"') ||
     (landing.includes('const terminal = "/trade"') && landing.includes("href={terminal}"))) &&
-    landing.includes("HomePage") && trade.includes("SandboxPage") &&
-    sandbox.includes("SIMULATION ONLY") &&
-    nativeTrade.includes("MarketTerminal") && nativeTrade.includes("TerminalShell") &&
-    terminalShell.includes("AmadeusWalletPanel") &&
+    landing.includes("HomePage") && trade.includes("MarketTerminal") &&
+    trade.includes("TerminalShell") && terminalShell.includes("AmadeusWalletPanel") &&
     terminalShell.includes("href=\"/\""),
   exactlyTwoAmaQuotedMarkets:markets.includes('["TESTBTC","TESTUSD"]') &&
     markets.includes('quote:"AMA"'),
