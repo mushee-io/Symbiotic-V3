@@ -1,3 +1,4 @@
+import * as React from "react";
 import { DemoReadinessPanel } from "@/components/DemoReadinessPanel";
 
 export const metadata={
