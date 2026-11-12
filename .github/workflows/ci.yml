@@ -21,3 +21,9 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
+      - name: Live Amadeus testnet RPC smoke test (nonblocking)
+        # A public testnet outage should not mask successful deterministic tests.
+        # Check the step OUTCOME separately before declaring M2 network-verified.
+        continue-on-error: true
+        timeout-minutes: 2
+        run: npm run testnet:check
