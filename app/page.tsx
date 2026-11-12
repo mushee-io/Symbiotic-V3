@@ -1,9 +1,77 @@
 "use client";
 import {useEffect,useState} from "react";
 import {MARKETS,COMING_SOON} from "@/lib/markets";
+
 export default function Home(){
-const [pair,setPair]=useState(0),[status,setStatus]=useState("Checking native testnet...");
-useEffect(()=>{let active=true;fetch("/api/network",{cache:"no-store"}).then(async r=>{const d=await r.json();if(active)setStatus(r.ok && d.status==="connected"?"Amadeus testnet connected · height "+d.height:"Testnet RPC unavailable");}).catch(()=>{if(active)setStatus("Testnet RPC unavailable")});return ()=>{active=false};},[]);
-const market=MARKETS[pair];
-return <><header className="header"><a className="logo" href="/">SYMBIOTIC <b>V3</b></a><nav className="links"><a className="accent" href="/">Spot</a><span className="muted">Perps · Soon</span><span className="muted">RWA · Soon</span><a href="/roadmap">12 Milestones</a></nav><button disabled>Connect AMA Wallet · M3</button></header><main className="shell"><section className="hero"><div className="eyebrow">AMA NATIVE · TESTNET · SPOT FIRST</div><h1>Trade on Amadeus.</h1><p>Two test assets, AMA-only pairs. Verified on-chain execution—not simulations.</p></section><div className="status">{status}</div><div className="main"><section className="panel"><h3>Spot markets · Amadeus testnet</h3><div className="pairs">{MARKETS.map((x,i)=><button className={i===pair?"selected":""} onClick={()=>setPair(i)} key={x.id}>{x.label}</button>)}</div><div className="empty"><div className="eyebrow">{market.label}</div><h2>Awaiting native liquidity pools</h2><p>No prices, candles, or volume will be displayed until verified reserve balances and on-chain swaps exist.</p></div></section><aside className="panel"><h3>Spot swap · AMA quote</h3><div className="swap"><p className="muted">Testnet execution unlocks only after native pools and wallet signing are verified.</p><label>Pay</label><div className="field">0.00 <strong>AMA</strong></div><label>Receive</label><div className="field">0.00 <strong>{market.base}</strong></div><button className="full" disabled>Swap unavailable until M8</button><p className="note">Development only: no test tokens minted, pool deployed or real swap confirmed from this interface yet.</p></div></aside></div><section className="future">{COMING_SOON.map(x=><article key={x}><strong>{x}</strong><p className="muted">Future market; not active.</p><small>COMING SOON</small></article>)}</section><p className="muted" style={{fontSize:12}}>Only the network status can report live chain data. <a href="https://testnet-ama.ddns.net" target="_blank" rel="noopener noreferrer">Amadeus testnet explorer ↗</a></p></main></>;
+  const [pair,setPair]=useState(0);
+  const [status,setStatus]=useState("Checking native testnet...");
+
+  useEffect(()=>{
+    let active=true;
+    fetch("/api/network",{cache:"no-store"})
+      .then(async response=>{
+        const data=await response.json();
+        if(active)setStatus(response.ok && data.status==="connected"
+          ? "Amadeus testnet connected · height "+data.height
+          : "Testnet RPC unavailable");
+      })
+      .catch(()=>{if(active)setStatus("Testnet RPC unavailable");});
+    return ()=>{active=false;};
+  },[]);
+
+  const market=MARKETS[pair];
+  return <>
+    <header className="header">
+      <a className="logo" href="/">SYMBIOTIC <b>V3</b></a>
+      <nav className="links">
+        <a className="accent" href="/">Spot</a>
+        <span className="muted">AI Agents · Soon</span>
+        <span className="muted">Perpetuals · Soon</span>
+        <span className="muted">RWA · Soon</span>
+        <a href="/roadmap">12 Milestones</a>
+      </nav>
+      <button disabled title="Native Amadeus wallet connection is scheduled for M3">Connect AMA Wallet · M3</button>
+    </header>
+    <main className="shell">
+      <section className="hero">
+        <div className="eyebrow">AMA NATIVE · TESTNET · AI SPOT TRADING</div>
+        <h1>AI trading on Amadeus.</h1>
+        <p>Every listed token pairs with AMA. Spot first; autonomous liquidity management and advanced markets are coming soon.</p>
+      </section>
+      <div className="status" role="status">{status}</div>
+      <div className="main">
+        <section className="panel">
+          <h3>Spot markets · AMA pairs only</h3>
+          <div className="pairs">{MARKETS.map((item,index)=>
+            <button className={index===pair?"selected":""} onClick={()=>setPair(index)} key={item.id}>{item.label}</button>
+          )}</div>
+          <div className="empty">
+            <div className="eyebrow">{market.label}</div>
+            <h2>Awaiting native liquidity pools</h2>
+            <p>Only independently verified reserves and confirmed swaps will generate displayed prices and trading activity. No simulated market data.</p>
+          </div>
+        </section>
+        <aside className="panel">
+          <h3>Spot swap · AMA quote</h3>
+          <div className="swap">
+            <p className="muted">Wallet signing and spot execution will be enabled only after verified Amadeus testnet pool deployment.</p>
+            <label>Pay</label>
+            <div className="field">0.00 <strong>AMA</strong></div>
+            <label>Receive</label>
+            <div className="field">0.00 <strong>{market.base}</strong></div>
+            <button className="full" disabled>Spot trading coming after M8</button>
+            <p className="note">Testnet build in progress. No token issuance, native pools, real swaps or AI orders have been verified yet.</p>
+          </div>
+        </aside>
+      </div>
+      <section className="future">
+        <article><strong>AI Trading Agent</strong><p className="muted">Automated liquidity and risk controls (M10).</p><small>COMING SOON</small></article>
+        {COMING_SOON.map(item=><article key={item}><strong>{item}</strong><p className="muted">Future market; not active.</p><small>COMING SOON</small></article>)}
+      </section>
+      <p className="muted" style={{fontSize:12}}>
+        Network status is informational, not proof of exchange readiness.{" "}
+        <a href="https://testnet-ama.ddns.net" target="_blank" rel="noopener noreferrer">Amadeus testnet explorer ↗</a>
+      </p>
+    </main>
+  </>;
 }
