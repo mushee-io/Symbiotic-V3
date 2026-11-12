@@ -12,7 +12,7 @@
 
 ## Present implementation
 
-This is currently a **spot interface with native testnet RPC health and read-only AMA wallet balance support**, **not a working exchange**. Token issuance, liquidity-pool contracts, wallet connections, spot swaps and AI agent execution require their respective milestones and independently verified testnet receipts. Inactive controls stay disabled.
+This is currently a **spot interface with native testnet RPC health and read-only AMA wallet balance support**, **not a working exchange**. Token issuance **planning, registry reads and a wallet-approved mint flow** are implemented in M4, but no live mint receipt has been verified. Liquidity pools, spot swaps and AI agent execution require later milestones and independently verified testnet receipts. Inactive controls stay disabled.
 
 ## Getting started
 
@@ -42,7 +42,8 @@ See the [12 detailed milestones](docs/roadmap.md) and [M1–M12 GitHub tracking 
 **M1:** Amadeus-only repository extraction, branding, and CI.  
 **M2:** Verify native testnet connectivity and runtime failure modes.  
 **M3:** Native extension discovery, opt-in account connection, local disconnect and live AMA testnet balance reads are implemented; the two-wallet witness and network-attestation gate remain pending. See [M3 wallet guide](docs/m3-native-wallet.md).  
-**M4–M9:** Two test tokens, pools, real liquidity and spot trading.  
+**M4:** Two strictly AMA-quoted test token definitions, read-only Coin registry, wallet-approved transaction construction and finalized mint verification (live mint witness pending). [M4 issuance guide](docs/m4-native-tokens.md).  
+**M5–M9:** Native AMM, pools, real liquidity and spot trading.  
 **M10–M12:** Guardrailed AI market making, security and public testnet demo.
 
 ## Sources

@@ -9,7 +9,8 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "test": "tsx --test tests/*.test.ts",
-    "testnet:check": "tsx scripts/check-testnet.ts"
+    "testnet:check": "tsx scripts/check-testnet.ts",
+    "tokens:check": "tsx scripts/check-test-tokens.ts"
   },
   "dependencies": {
     "@amadeus-protocol/sdk": "^1.8.0",

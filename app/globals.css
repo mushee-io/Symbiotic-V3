@@ -13,3 +13,9 @@
 .walletCaption{font-size:11px;line-height:1.5}
 .walletPanel .note a{text-decoration:underline}
 @media(max-width:500px){.walletLine{align-items:flex-start;flex-direction:column}.walletLine strong,.walletLine code{text-align:left}}
+
+.tokenPanel{margin:8px;border-color:#37513d}
+.tokenItem{padding:12px 0;border-bottom:1px solid var(--border)}
+.tokenItem .walletLine{border:0}
+.tokenItem .walletConnect{margin:8px 0}
+.walletSuccess{overflow-wrap:anywhere;border:1px solid #548c43;background:#112b1d;padding:12px;color:#9df0b3;font-size:12px;line-height:1.6}

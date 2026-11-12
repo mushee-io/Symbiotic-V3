@@ -27,3 +27,9 @@ jobs:
         continue-on-error: true
         timeout-minutes: 2
         run: npm run testnet:check
+
+      - name: Read-only native test token registry smoke check (nonblocking)
+        # This confirms existing public state only, NEVER that a mint occurred.
+        continue-on-error: true
+        timeout-minutes: 2
+        run: npm run tokens:check
