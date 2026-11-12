@@ -3,6 +3,7 @@ import {useEffect,useState} from "react";
 import {MARKETS,COMING_SOON} from "@/lib/markets";
 import { AmadeusWalletPanel } from "@/components/AmadeusWalletPanel";
 import { MarketTerminal } from "@/components/MarketTerminal";
+import { AgentMonitorPanel } from "@/components/AgentMonitorPanel";
 
 export default function Home(){
   const [pair,setPair]=useState(0);
@@ -62,13 +63,14 @@ export default function Home(){
           <AmadeusWalletPanel rpcHealthy={rpcHealthy} onAccountChange={setWalletAccount} />
         </div>
       </div>
+      <AgentMonitorPanel base={market.base} account={walletAccount} rpcHealthy={rpcHealthy} />
       <section className="future">
-        <article><strong>AI Trading Agent</strong><p className="muted">Automated liquidity and risk controls (M10).</p><small>COMING SOON</small></article>
+        <article><strong>AI Market Maker</strong><p className="muted">M10 read-only guardrails and audit preview are available above. Live execution is locked.</p><small>RESEARCH ONLY</small></article>
         {COMING_SOON.map(item=><article key={item}><strong>{item}</strong><p className="muted">Future market; not active.</p><small>COMING SOON</small></article>)}
       </section>
       <p className="muted" style={{fontSize:12}}>
         Network status is informational, not proof of exchange readiness.{" "}
-        <a href="https://testnet-ama.ddns.net" target="_blank" rel="noopener noreferrer">Amadeus testnet explorer ↗</a>
+        <a href="https://testnet.explorer.ama.one" target="_blank" rel="noopener noreferrer">Amadeus testnet explorer ↗</a>
       </p>
     </main>
   </>;
