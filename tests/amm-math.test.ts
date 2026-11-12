@@ -1,4 +1,5 @@
 import test from "node:test";
+import { toBase58 } from "@amadeus-protocol/sdk";
 import assert from "node:assert/strict";
 import {
   AMM_FEE_BPS, BPS_DENOMINATOR, MAX_I128, MAX_RESERVE, MIN_LOCKED_LP,
@@ -10,9 +11,9 @@ import {
   swapExactIn, requirePair,
 } from "../lib/amm/pool";
 
-const A = "2".repeat(65);
-const B = "3".repeat(65);
-const C = "4".repeat(65);
+const A = toBase58(new Uint8Array(48).fill(2));
+const B = toBase58(new Uint8Array(48).fill(3));
+const C = toBase58(new Uint8Array(48).fill(4));
 const ONE = 1_000_000_000n;
 const baseUnit = ONE; // 9 native Coin decimals
 
