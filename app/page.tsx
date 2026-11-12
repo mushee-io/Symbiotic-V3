@@ -58,12 +58,12 @@ export default function Home(){
         <div className="walletColumn"><aside className="panel">
           <h3>Spot swap · AMA quote</h3>
           <div className="swap">
-            <p className="muted">Wallet signing and spot execution will be enabled only after verified Amadeus testnet pool deployment.</p>
+            <p className="muted">M8 native BUY / SELL previews are available inside the connected AMA wallet below. Execution is still blocked pending M3–M7 native testnet evidence.</p>
             <label>Pay</label>
-            <div className="field">0.00 <strong>AMA</strong></div>
+            <div className="field">— <strong>AMA</strong></div>
             <label>Receive</label>
-            <div className="field">0.00 <strong>{market.base}</strong></div>
-            <button className="full" disabled>Spot trading coming after M8</button>
+            <div className="field">— <strong>{market.base}</strong></div>
+            <a className="full" href="#m8-spot">Review native BUY / SELL</a>
             <p className="note">Testnet build in progress. No token issuance, native pools, real swaps or AI orders have been verified yet.</p>
           </div>
         </aside>
