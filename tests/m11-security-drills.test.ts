@@ -25,7 +25,10 @@ const snapshot:PoolSnapshot={
 
 test("M11 native safety drill: unbound ELF guest cannot let first caller choose admin (static source, NOT runtime)",()=>{
   const guest=readFileSync(new URL("../contracts/amadeus-riscv/pools/examples/pool.rs",import.meta.url),"utf8");
-  assert.match(guest,/const APPROVED_INITIALIZER: \[u8; h::KEY_BYTES\] = \[0u8; h::KEY_BYTES\]/);
+  const builder=readFileSync(new URL("../contracts/amadeus-riscv/pools/build.rs",import.meta.url),"utf8");
+  assert.ok(guest.includes('include!(concat!(env!("OUT_DIR"), "/pool_initializer.rs"))'));
+  assert.ok(builder.includes("Err(env::VarError::NotPresent) => [0u8; 48]"));
+  assert.ok(builder.includes("decode_base58_48(&address)"));
   assert.match(guest,/authorized_initializer\(&owner,\s*&APPROVED_INITIALIZER\)/);
   assert.match(guest,/initializer_not_authorized/);
   assert.equal(VERIFIED_POOLS.TESTBTC,null);
