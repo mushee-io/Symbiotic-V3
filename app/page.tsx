@@ -1,13 +1,9 @@
-import {FluidHero} from "@/components/FluidHero";
-import {SymbioticLanding} from "@/components/SymbioticLanding";
-
-/**
- * The original full-screen video hero stays unchanged.
- * Everything after it uses the unified light Symbiotic V2 design system.
- */
-export default function HomePage(){
- return <main>
-  <FluidHero/>
-  <SymbioticLanding/>
- </main>;
+"use client";
+import {useEffect,useState} from "react";
+import {MARKETS,COMING_SOON} from "@/lib/markets";
+export default function Home(){
+const [pair,setPair]=useState(0),[status,setStatus]=useState("Checking native testnet...");
+useEffect(()=>{let active=true;fetch("/api/network",{cache:"no-store"}).then(async r=>{const d=await r.json();if(active)setStatus(r.ok && d.status==="connected"?"Amadeus testnet connected · height "+d.height:"Testnet RPC unavailable");}).catch(()=>{if(active)setStatus("Testnet RPC unavailable")});return ()=>{active=false};},[]);
+const market=MARKETS[pair];
+return <><header className="header"><a className="logo" href="/">SYMBIOTIC <b>V3</b></a><nav className="links"><a className="accent" href="/">Spot</a><span className="muted">Perps · Soon</span><span className="muted">RWA · Soon</span><a href="/roadmap">12 Milestones</a></nav><button disabled>Connect AMA Wallet · M3</button></header><main className="shell"><section className="hero"><div className="eyebrow">AMA NATIVE · TESTNET · SPOT FIRST</div><h1>Trade on Amadeus.</h1><p>Two test assets, AMA-only pairs. Verified on-chain execution—not simulations.</p></section><div className="status">{status}</div><div className="main"><section className="panel"><h3>Spot markets · Amadeus testnet</h3><div className="pairs">{MARKETS.map((x,i)=><button className={i===pair?"selected":""} onClick={()=>setPair(i)} key={x.id}>{x.label}</button>)}</div><div className="empty"><div className="eyebrow">{market.label}</div><h2>Awaiting native liquidity pools</h2><p>No prices, candles, or volume will be displayed until verified reserve balances and on-chain swaps exist.</p></div></section><aside className="panel"><h3>Spot swap · AMA quote</h3><div className="swap"><p className="muted">Testnet execution unlocks only after native pools and wallet signing are verified.</p><label>Pay</label><div className="field">0.00 <strong>AMA</strong></div><label>Receive</label><div className="field">0.00 <strong>{market.base}</strong></div><button className="full" disabled>Swap unavailable until M8</button><p className="note">Development only: no test tokens minted, pool deployed or real swap confirmed from this interface yet.</p></div></aside></div><section className="future">{COMING_SOON.map(x=><article key={x}><strong>{x}</strong><p className="muted">Future market; not active.</p><small>COMING SOON</small></article>)}</section><p className="muted" style={{fontSize:12}}>Only the network status can report live chain data. <a href="https://testnet-ama.ddns.net" target="_blank" rel="noopener noreferrer">Amadeus testnet explorer ↗</a></p></main></>;
 }

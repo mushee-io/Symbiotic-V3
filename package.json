@@ -1,37 +1,25 @@
 {
-  "name": "symbiotic-cardano-derivatives",
-  "version": "0.16.0",
+  "name": "symbiotic-v3-amadeus",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test tests/*.test.ts",
-    "contracts:verify": "node scripts/verify-blueprint.mjs plutus.json",
-    "contracts:manifest": "node scripts/export-validator-manifest.mjs plutus.json artifacts/validator-manifest.json",
-    "contracts:parameters": "node scripts/export-parameter-schema.mjs plutus.json artifacts/parameter-schema.json"
+    "test": "tsx --test tests/*.test.ts"
   },
   "dependencies": {
-    "@meshsdk/core": "1.9.1",
+    "@amadeus-protocol/sdk": "^1.0.4",
     "next": "16.4.2",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "lucide-react": "^0.468.0",
-    "motion": "^12.23.12",
-    "lightweight-charts": "^5.0.9"
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "tsx": "^4.19.0",
-    "typescript": "^5.7.0",
-    "@tailwindcss/postcss": "^4.1.13",
-    "tailwindcss": "^4.1.13"
-  },
-  "overrides": {
-    "ip-address": "10.7.4",
-    "undici": "6.28.1"
+    "typescript": "^5.7.0"
   }
 }
