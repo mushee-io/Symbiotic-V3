@@ -25,7 +25,12 @@ function detectInjectedWallet(): AmadeusWalletProvider | null {
   );
 }
 
-export function AmadeusWalletPanel({ rpcHealthy }: { rpcHealthy: boolean }) {
+export function AmadeusWalletPanel({
+  rpcHealthy, onAccountChange,
+}: {
+  rpcHealthy: boolean;
+  onAccountChange?: (account: string | null) => void;
+}) {
   const [provider, setProvider] = useState<AmadeusWalletProvider | null>(null);
   const [account, setAccount] = useState<string | null>(null);
   const [network, setNetwork] = useState<WalletNetworkState>("unverified");
@@ -35,6 +40,11 @@ export function AmadeusWalletPanel({ rpcHealthy }: { rpcHealthy: boolean }) {
   const [balanceStatus, setBalanceStatus] = useState<BalanceStatus>("idle");
   const [balanceRefresh, setBalanceRefresh] = useState(0);
   const connectionEpoch = useRef(0);
+
+  useEffect(() => {
+    onAccountChange?.(account);
+    return () => onAccountChange?.(null);
+  }, [account, onAccountChange]);
 
   useEffect(() => {
     // Discovery never requests account permission. Only the Connect button does.
