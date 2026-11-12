@@ -11,10 +11,10 @@ function validBalance(float: number, symbol: string = "AMA") {
 }
 
 test("accepts valid actual SDK AMA balance envelope, including real zero", () => {
-  const b = parseAmaBalance(validBalance(15).balance, ADDRESS);
+  const b = parseAmaBalance(validBalance(15), ADDRESS);
   assert.equal(b.amount, "15");
   assert.equal(b.network, "amadeus-testnet");
-  const zero = parseAmaBalance(validBalance(0).balance, ADDRESS);
+  const zero = parseAmaBalance(validBalance(0), ADDRESS);
   assert.equal(zero.amount, "0");
 });
 
