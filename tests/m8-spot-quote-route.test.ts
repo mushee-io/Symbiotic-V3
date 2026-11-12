@@ -6,7 +6,7 @@ import { toBase58 } from "@amadeus-protocol/sdk";
 
 const OWNER = toBase58(new Uint8Array(48).fill(4));
 const baseUrl = "https://symbiotic.example/api/spot/quote";
-function query(params:Record<string,string>={}){
+function query(params:Partial<Record<"base" | "side" | "amount" | "slippageBps" | "owner", string>>={}){
   const p = new URLSearchParams({base:"TESTBTC",side:"BUY",amount:"10000",slippageBps:"50",...params});
   return new Request(baseUrl + "?" + p.toString());
 }
