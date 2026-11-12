@@ -13,8 +13,9 @@ test("homepage follows the supplied Symbasis reference and uses Amadeus Protocol
 
 test("homepage navigation targets existing terminal sections and evidence routes", () => {
   const trade = readFileSync(new URL("../app/trade/page.tsx", import.meta.url), "utf8");
+  const sandbox = readFileSync(new URL("../app/sandbox/page.tsx", import.meta.url), "utf8");
   const components = ["AmadeusWalletPanel", "NativeLiquidityPanel", "TokenIssuancePanel"].map(name => readFileSync(new URL(`../components/${name}.tsx`, import.meta.url), "utf8")).join("\n");
-  for (const target of [...home.matchAll(/\/trade#([\w-]+)/g)].map(match => match[1])) assert.ok((trade + components).includes(`id="${target}"`), `missing target ${target}`);
+  for (const target of [...home.matchAll(/\/trade#([\w-]+)/g)].map(match => match[1])) assert.ok((trade + sandbox + components).includes(`id="${target}"`), `missing target ${target}`);
   assert.match(home, /const terminal = "\/trade"/);
   assert.match(home, /href="\/demo"/);
   assert.match(home, /href="\/roadmap"/);
