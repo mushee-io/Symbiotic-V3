@@ -3,11 +3,11 @@ import assert from "node:assert/strict";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { readFileSync } from "node:fs";
-import Home from "../app/page";
+import TradePage from "../app/trade/page";
 
-const render = () => renderToStaticMarkup(createElement(Home));
+const render = () => renderToStaticMarkup(createElement(TradePage));
 
-test("exchange first fold starts with real AMA trading panels, not oversized marketing hero", () => {
+test("/trade exchange route starts with AMA trading panels, not a marketing hero", () => {
   const html=render();
   assert.match(html,/SYMBIOTIC/);
   assert.match(html,/Spot pairs/);
@@ -18,6 +18,8 @@ test("exchange first fold starts with real AMA trading panels, not oversized mar
   assert.match(html,/On-chain activity/);
   assert.match(html,/Wallet balances/);
   assert.match(html,/Connect Wallet/);
+  assert.match(html,/href="\/"[^>]*>Home<\/a>/);
+  assert.match(html,/href="\/trade"/);
   assert.doesNotMatch(html,/Trading architecture/);
   assert.doesNotMatch(html,/Evidence first/);
   assert.ok(html.indexOf("Spot pairs") < html.indexOf("Price chart"));
