@@ -70,6 +70,18 @@ test("finalized successful native call has bounded chain height and exact AMA at
   assert.equal(sell.attachedSymbol,"TESTBTC");
 });
 
+test("the second market accepts only its own TESTUSD Coin or AMA attachments",()=>{
+  const usd:PoolCertificate={...certificate,symbol:"TESTUSD"};
+  const sell=verifyFinalizedSwapCall(tx({symbol:"TESTUSD"}),HASH,usd,OWNER,120);
+  assert.equal(sell.pair,"TESTUSD/AMA");
+  assert.equal(sell.side,"SELL");
+  assert.equal(sell.attachedSymbol,"TESTUSD");
+  const buy=verifyFinalizedSwapCall(tx({symbol:"AMA"}),HASH,usd,OWNER,120);
+  assert.equal(buy.pair,"TESTUSD/AMA");
+  assert.equal(buy.side,"BUY");
+  assert.throws(()=>verifyFinalizedSwapCall(tx({symbol:"TESTBTC"}),HASH,usd,OWNER,120),LiquidityUnavailableError);
+});
+
 test("reject wrong signer, pool, method, symbol, attachment, receipt, finality and height",()=>{
   const invalid=[
     {owner:CONTRACT},{contract:OWNER},{function:"transfer"},{symbol:"USDC"},
