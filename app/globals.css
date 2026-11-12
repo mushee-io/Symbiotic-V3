@@ -25,3 +25,36 @@
 .liquidityFields input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:10px;color:var(--foreground,#f5f5f5);font-family:inherit}
 .tokenPanel .walletLine select{background:var(--bg);color:inherit;border:1px solid var(--border);padding:9px;border-radius:4px}
 .tokenPanel .note{overflow-wrap:anywhere}
+
+/* M9 native terminal: two-market responsive grid; no decorative/fake chart. */
+.terminalColumn{display:flex;min-width:0;flex-direction:column;gap:14px}
+.terminalPanel{min-width:0;overflow:hidden}
+.terminalHeader{padding:20px;display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+.terminalHeader h2{font-size:clamp(19px,3vw,30px);margin:8px 0 0}
+.terminalMeta{font-size:12px;color:var(--muted);border-block:1px solid var(--border);padding:12px 20px;line-height:1.5}
+.terminalMetrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--border);border-bottom:1px solid var(--border)}
+.terminalMetrics>div{display:flex;flex-direction:column;gap:9px;padding:17px;background:var(--panel);min-width:0}
+.terminalMetrics small{font-size:11px;color:var(--muted)}
+.terminalMetrics strong{font-size:13px;overflow-wrap:anywhere}
+.terminalChartPlaceholder{min-height:190px;padding:24px;text-align:center;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:9px;background:var(--bg);border-bottom:1px solid var(--border)}
+.terminalChartPlaceholder strong{font-size:15px}
+.terminalChartPlaceholder p{font-size:12px;line-height:1.65;color:var(--muted);max-width:470px;margin:0}
+.terminalBalances,.terminalQuote,.terminalHistory{border-top:1px solid var(--border);padding-bottom:15px}
+.terminalBalances h3,.terminalQuote h3,.terminalHistory h3{border:0;padding-bottom:8px}
+.terminalInset{padding:0 20px;font-size:12px;line-height:1.6}
+.terminalForm{display:grid;grid-template-columns:1fr 1fr;gap:11px;padding:10px 20px}
+.terminalForm label{display:flex;flex-direction:column;gap:7px;font-size:12px;color:var(--muted)}
+.terminalForm label:first-child{grid-column:1/-1}
+.terminalForm input,.terminalForm select{width:100%;min-width:0;background:var(--bg);color:var(--ink);border:1px solid var(--border);padding:10px;border-radius:4px;font:inherit}
+.terminalActions{display:flex;gap:9px;flex-wrap:wrap;padding:10px 20px}
+.terminalQuote .walletError{padding:0 20px}
+.terminalTxList{display:grid;gap:8px;padding:12px 20px}
+.terminalTxList article{border:1px solid var(--border);padding:13px;background:var(--bg);overflow-wrap:anywhere}
+.terminalTxTop{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:12px}
+.terminalTxTop small,.terminalTxList small{color:var(--muted)}
+.terminalTxList p{font-size:12px;color:var(--ink)}
+.terminalTxList a{display:block;color:var(--accent);font-size:12px;text-decoration:underline;margin-top:9px}
+.terminalFooter{font-size:11px;line-height:1.6;color:var(--muted);padding:8px 20px;margin:0}
+.terminalMarketSwitch h3{padding-bottom:10px}
+.terminalMarketSwitch .pairs{flex-wrap:wrap}
+@media(max-width:600px){.terminalMetrics{grid-template-columns:1fr}.terminalForm{grid-template-columns:1fr}.terminalForm label:first-child{grid-column:auto}.terminalHeader{align-items:flex-start}}
