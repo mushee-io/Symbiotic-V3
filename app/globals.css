@@ -164,3 +164,176 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{ou
 .demoMilestone>a{color:var(--accent);font-size:12px;text-decoration:underline}
 @media(max-width:850px){.demoRoadmapGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:550px){.demoRoadmapGrid{grid-template-columns:1fr}}
+
+
+/* Exchange-first V3 spot workspace — authentic data only, no mock candles or order book. */
+.exApp{--bg:#080d10;--panel:#0d1418;--ink:#e9eeec;--muted:#839197;--accent:#bafd35;--border:#29353b;background:var(--bg);color:var(--ink);min-height:100vh;font-family:Arial,Helvetica,sans-serif}
+.exApp button,.exApp input,.exApp select{font-family:inherit}
+.exApp .exHeader{height:65px;position:relative;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:0 23px;border-bottom:1px solid var(--border);background:#0c1115}
+.exHeaderLeft,.exHeaderRight{display:flex;align-items:center;gap:19px;min-width:0}
+.exBrand{display:inline-flex;gap:9px;align-items:center;white-space:nowrap;font-size:17px;font-weight:900;letter-spacing:-.8px}
+.exBrand b{color:var(--accent)}
+.exBrandMark{display:inline-flex;align-items:center;justify-content:center;font-size:18px;width:29px;height:29px;color:#0a1109;background:var(--accent);border-radius:8px;font-weight:900}
+.exHeaderDivider{height:24px;width:1px;background:var(--border)}
+.exNav{display:flex;gap:26px;align-items:center;height:65px;white-space:nowrap}
+.exNav a{font-size:12px;font-weight:600;color:#96a4a8;height:100%;display:inline-flex;align-items:center;border-bottom:2px solid transparent}
+.exNav a:hover{color:#e6efed}
+.exNav .exNavActive{color:var(--accent);border-color:var(--accent)}
+.exChainPill{display:flex;align-items:center;gap:8px;color:#b6c5c7;font-size:11px;font-weight:700;white-space:nowrap}
+.exLed{background:#72e78f;border-radius:50%;display:inline-block;width:7px;height:7px;box-shadow:0 0 10px rgba(114,231,143,.5);flex:none}
+.exLedOff{background:#ee986d;box-shadow:none}
+.exHeaderWallet{background:var(--accent);border:1px solid var(--accent);color:#091108;border-radius:5px;font-size:12px;font-weight:800;padding:11px 15px;white-space:nowrap}
+.exHeaderWallet:hover{background:#d0ff73}
+.exNetworkBar{display:flex;align-items:center;gap:24px;min-height:36px;border-bottom:1px solid #1c2a30;background:#0a1114;padding:7px 23px;color:#718388;font-size:11px}
+.exNetworkBar a{color:#b3c0c1;margin-left:auto;white-space:nowrap}
+.exNetworkBar a:hover{color:var(--accent)}
+.exNetworkStatus{display:flex;align-items:center;gap:8px;color:#a9baba}
+.exNetworkWarning{color:#dab98a}
+.exWorkspace{display:grid;grid-template-columns:235px minmax(0,1fr);width:100%;min-height:735px}
+.exWatchlist{min-width:0;border-right:1px solid var(--border);background:#0c1216;display:flex;flex-direction:column}
+.exWatchHeader{padding:23px 16px 18px;display:flex;justify-content:space-between;align-items:center}
+.exMicroLabel{font-size:9px;letter-spacing:.16em;color:#74878d;font-weight:800}
+.exWatchHeader h2{margin:7px 0 0;font-size:18px;letter-spacing:-.03em}
+.exWatchCount{font-size:12px;border:1px solid #314046;padding:5px 8px;border-radius:5px;color:var(--muted)}
+.exWatchFilters{display:flex;padding:0 13px 13px;gap:5px;font-size:11px;color:#7f9296}
+.exWatchFilters span{padding:8px 9px}
+.exWatchFilters .exSelectedFilter{background:#1c2a2b;color:var(--accent);border-radius:4px}
+.exWatchHeadings{display:flex;justify-content:space-between;padding:12px 15px;border-block:1px solid var(--border);font-size:10px;color:#72868c;text-transform:uppercase;letter-spacing:.06em}
+.exWatchRows{padding:7px 0}
+.exWatchRow{width:100%;background:none;border:0;border-left:3px solid transparent;display:flex;gap:9px;text-align:left;align-items:center;color:var(--ink);padding:15px 12px;transition:background .15s ease}
+.exWatchRow:hover{background:#142025}
+.exWatchRowSelected{background:#152323;border-left-color:var(--accent)}
+.exTokenAvatar,.exPairCoin{display:inline-flex;align-items:center;justify-content:center;flex:none;width:34px;height:34px;border-radius:50%;font-size:11px;letter-spacing:-.04em;font-weight:800;background:#263e30;color:var(--accent)}
+.exWatchRow:nth-child(2) .exTokenAvatar{background:#263b46;color:#8bd4ec}
+.exWatchPair{display:flex;flex-direction:column;gap:6px;min-width:0;flex:1}
+.exWatchPair strong{font-size:12px;white-space:nowrap}
+.exWatchPair strong small{font-weight:500;color:#7d8e92;margin-left:2px}
+.exWatchPair>span{font-size:10px;color:#738288;white-space:nowrap}
+.exWatchQuote{text-align:right;font-size:13px;font-weight:700}
+.exWatchQuote small{display:block;font-size:9px;font-weight:400;color:#697980;white-space:nowrap;margin-top:6px}
+.exWatchBottom{padding:18px 16px;border-top:1px solid var(--border);margin-top:auto}
+.exWatchBottom p{font-size:11px;line-height:1.7;color:#819196}
+.exWatchBottom a{font-size:11px;color:var(--accent);display:block;margin-top:14px}
+.exTerminal{min-width:0;min-height:735px}
+.exPairBar{display:flex;align-items:center;gap:27px;padding:16px 22px;min-height:86px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.exPairIdentity{display:flex;gap:11px;align-items:center;min-width:200px;padding-right:10px}
+.exPairCoin{width:42px;height:42px;font-size:13px}
+.exPairIdentity h1{font-size:21px;margin:0 0 5px;font-weight:800;letter-spacing:-.05em;white-space:nowrap}
+.exPairIdentity h1 span{font-weight:500;color:#84969a;font-size:16px}
+.exPairIdentity small{font-size:11px;color:#82959b}
+.exPairLast,.exPairStat{display:flex;flex-direction:column;gap:6px;min-width:90px}
+.exPairLast span,.exPairStat span{font-size:10px;color:#819299}
+.exPairLast strong{font-size:19px;line-height:1.1}
+.exPairLast small{font-size:10px;color:#657980}
+.exPairStat strong{font-size:13px;font-weight:700}
+.exRefresh{margin-left:auto;border:1px solid #2d3d43;border-radius:5px;background:#111b20;color:#a4bab9;font-size:12px;padding:9px 12px}
+.exRefresh:hover{color:var(--accent);border-color:var(--accent)}
+.exMarketInfo{display:flex;gap:17px;align-items:center;flex-wrap:wrap;min-height:34px;padding:8px 20px;border-bottom:1px solid #263339;background:#0c1518;font-size:10px;color:#819197}
+.exStatePending{color:#efbc84}
+.exStateOk{color:#86e9a1}
+.exTradingGrid{display:grid;grid-template-columns:minmax(0,1fr) 325px;min-width:0}
+.exPrimaryPane{min-width:0;border-right:1px solid var(--border)}
+.exChartPanel{min-width:0;overflow:hidden;border-bottom:1px solid var(--border)}
+.exPanelTop{height:46px;padding:0 18px;display:flex;align-items:center;gap:18px;justify-content:space-between;border-bottom:1px solid var(--border);font-size:11px;white-space:nowrap}
+.exPanelTitle{display:flex;align-items:center;gap:9px}
+.exPanelTitle strong{font-size:13px}
+.exPanelTitle>span:last-child{color:var(--muted)}
+.exPanelDivider{color:#364d51}
+.exChartControlDisabled{color:#6c8389;letter-spacing:.02em}
+.exChartDataBadge{font-size:10px;color:#c9ad83;background:#2a241b;padding:7px;border-radius:3px}
+.exChartView{position:relative;min-height:415px;background:radial-gradient(ellipse 57% 65% at center,#101b20 0%,#0a1115 90%);overflow:hidden;isolation:isolate}
+.exChartGridBg{position:absolute;inset:0;background-image:linear-gradient(to right,transparent calc(100% - 1px),rgba(94,118,121,.16) 100%),linear-gradient(to bottom,transparent calc(100% - 1px),rgba(94,118,121,.16) 100%);background-size:15% 100%,100% 20%;opacity:.75;pointer-events:none}
+.exChartAxisY{position:absolute;right:0;top:0;bottom:0;width:45px;border-left:1px solid #26373b;display:flex;flex-direction:column;justify-content:space-between;align-items:center;padding:23px 0;background:#0c1519;color:#52676d;font-size:11px;z-index:1}
+.exChartOverlay{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:2;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;max-width:380px;width:calc(100% - 100px);padding:20px 15px;background:rgba(10,17,20,.74);border:1px solid rgba(71,93,100,.24);border-radius:8px;box-shadow:0 10px 70px #060e1170}
+.exChartOverlay strong{font-size:16px;font-weight:800;letter-spacing:-.025em}
+.exChartOverlay p{font-size:12px;line-height:1.75;color:#87989b;margin:0}
+.exChartOverlay a{color:var(--accent);font-size:11px;margin-top:3px}
+.exChartEmptyGlyph{height:47px;display:flex;align-items:center;gap:6px;opacity:.6;margin-bottom:5px}
+.exChartEmptyGlyph span{width:6px;background:linear-gradient(to bottom,#c7fd5b,#517f5e);border-radius:2px;height:25px}
+.exChartEmptyGlyph span:nth-child(2){height:42px}
+.exChartEmptyGlyph span:nth-child(3){height:18px}
+.exChartEmptyGlyph span:nth-child(4){height:34px}
+.exChartBrand{position:absolute;bottom:22px;left:24px;color:#31454b;font-size:38px;font-weight:900;letter-spacing:-.05em;opacity:.13;pointer-events:none}
+.exChartBottom{height:32px;display:flex;align-items:center;justify-content:space-between;gap:10px;color:#677e83;font-size:9px;letter-spacing:.04em;padding:0 18px;background:#0a1114}
+.exReserveStrip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));background:#0e1619;border-bottom:1px solid var(--border)}
+.exReserveStrip>div{min-width:0;padding:15px 17px;display:flex;flex-direction:column;gap:7px;border-right:1px solid var(--border)}
+.exReserveStrip>div:last-child{border-right:0}
+.exReserveStrip small{font-size:9px;color:#7c8b90;letter-spacing:.07em;font-weight:700}
+.exReserveStrip strong{font-size:12px;overflow-wrap:anywhere}
+.exReserveStrip span{font-size:10px;color:#6e7f85}
+.exActivityPanel{min-height:206px;min-width:0}
+.exActivityTabs{display:flex;gap:20px;border-bottom:1px solid var(--border);padding:0 17px;min-height:43px;align-items:center;white-space:nowrap;overflow:auto}
+.exActivityTabs button{border:0;border-bottom:2px solid transparent;background:none;color:#82959a;padding:13px 2px 11px;font-size:11px;font-weight:700;white-space:nowrap}
+.exActivityTabs button.exActivityActive{color:var(--accent);border-color:var(--accent)}
+.exActivityTableHead{display:grid;grid-template-columns:2fr 1fr 1fr .8fr;color:#718389;font-size:10px;border-bottom:1px solid #1c2b30;padding:10px 15px;gap:8px}
+.exNoActivity{display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;min-height:125px;padding:18px;gap:9px}
+.exNoActivity strong{font-size:12px;color:#d0d9d4}
+.exNoActivity p{margin:0;max-width:380px;font-size:11px;line-height:1.5;color:#75878c}
+.exActivityRow{display:grid;grid-template-columns:2fr 1fr 1fr .8fr;padding:13px 15px;gap:8px;border-bottom:1px solid #1c2b30;align-items:center;font-size:11px}
+.exActivityRow div{display:flex;flex-direction:column;gap:5px;min-width:0}
+.exActivityRow div small{color:#8b999a;font-size:10px}
+.exActivityRow>span{overflow-wrap:anywhere}
+.exActivityRow a{color:var(--accent)}
+.exBalancesBody{padding:8px 17px}
+.exBalancesBody>div:not(.exNoActivity){display:flex;justify-content:space-between;gap:16px;padding:12px 0;border-bottom:1px solid #253339;font-size:11px}
+.exBalancesBody>div span,.exBalancesBody p{color:#819096}
+.exBalancesBody>div strong{overflow-wrap:anywhere;text-align:right}
+.exBalancesBody>a{display:block;color:var(--accent);font-size:11px;padding:12px 0}
+.exBalancesBody>p{font-size:11px;line-height:1.7}
+.exTicket{background:#0d1519;min-width:0;display:flex;flex-direction:column}
+.exTicketHeading{height:46px;padding:0 18px;display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid var(--border)}
+.exTicketHeading strong{font-size:13px}
+.exTicketHeading>span{font-size:9px;color:#e0b47b;letter-spacing:.05em}
+.exSideSwitch{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:16px 16px 10px}
+.exSideSwitch button{padding:11px;border-radius:4px;border:1px solid #2a363b;background:#111b20;color:#899c9f;font-size:13px;font-weight:800}
+.exSideSwitch .exBuySelected{background:#163c2c;border-color:#3e9062;color:#85f4ac}
+.exSideSwitch .exSellSelected{background:#3e222a;border-color:#9b4655;color:#ff8c99}
+.exTicketBody{padding:4px 16px 18px}
+.exTicketMarket{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid #203037;font-size:11px}
+.exTicketMarket span{color:#82969a}
+.exTicketMarket strong{font-size:11px;font-weight:700}
+.exInputLabel{display:flex;flex-direction:column;gap:9px;font-size:11px;font-weight:700;margin:19px 0 0}
+.exInputLabel>span{display:flex;justify-content:space-between;align-items:center;gap:6px}
+.exInputLabel>span small{font-size:10px;color:#82959a;font-weight:500}
+.exInputWrapper{display:flex;gap:8px;align-items:center;border-radius:5px;border:1px solid #34454a;background:#111b20;padding:0 12px;min-height:47px}
+.exInputWrapper:focus-within{border-color:var(--accent)}
+.exInputWrapper input{min-width:0;width:100%;height:45px;border:0;background:transparent;color:var(--ink);outline:0;font-size:18px;font-weight:700}
+.exInputWrapper input::placeholder{color:#52686e}
+.exInputWrapper strong{font-size:12px}
+.exSlippage{width:100%;min-height:43px;padding:10px 12px;background:#111b20;color:var(--ink);border:1px solid #34454a;border-radius:5px;font-size:12px}
+.exQuoteDetails{border-block:1px solid #26343a;padding:13px 0;margin:20px 0 13px}
+.exQuoteDetails>div{display:flex;justify-content:space-between;gap:12px;margin:8px 0;font-size:10px;line-height:1.5}
+.exQuoteDetails span{color:#7c8c92}
+.exQuoteDetails strong{text-align:right;font-size:10px;overflow-wrap:anywhere}
+.exPreviewButton,.exTradeLocked{display:block;width:100%;min-height:44px;border-radius:5px;font-size:12px;font-weight:800;padding:10px}
+.exPreviewButton{color:var(--accent);background:#15241f;border:1px solid #41694a;margin-bottom:10px}
+.exPreviewButton:disabled{background:#17211e;color:#697d72;border-color:#273b30;opacity:1}
+.exTradeLocked,.exTradeLocked:disabled{background:#2b3434;color:#869397;border:1px solid #374245;cursor:not-allowed;opacity:1}
+.exTicketError{font-size:11px;color:#ff9a92;line-height:1.6}
+.exTicketNotice{font-size:10px;line-height:1.7;color:#8c9ba0;margin:13px 0 0}
+.exTicketAccount{padding:16px;border-top:1px solid var(--border);margin-top:auto;display:flex;flex-direction:column;gap:7px}
+.exTicketAccount span{font-size:10px;letter-spacing:.07em;color:#89999d}
+.exTicketAccount strong{font-size:12px;overflow-wrap:anywhere}
+.exTicketAccount small{font-size:10px;color:#76888d;line-height:1.5}
+.exSubfooter{margin:0;border-top:1px solid var(--border);background:#0c1317}
+.exResearchToggle{border:0;background:none;width:100%;color:var(--ink);display:flex;align-items:center;justify-content:space-between;gap:16px;padding:17px 24px;text-align:left;font-size:12px}
+.exResearchToggle>span:first-child{display:flex;align-items:center;gap:15px}
+.exResearchToggle small{color:#7d9095;font-size:11px;font-weight:400}
+.exResearchToggle>span:last-child{color:var(--accent)}
+.exSubfooter>.agentPanel{margin:0 20px 20px}
+.exFooter{border-top:1px solid #26343a;background:#0b1114;display:flex;align-items:center;gap:20px;justify-content:space-between;flex-wrap:wrap;color:#788b90;padding:18px 24px;font-size:10px;letter-spacing:.02em}
+.exFooter a{color:var(--accent)}
+.exWalletOverlay{position:fixed;inset:0;z-index:90}
+.exWalletScrim{position:absolute;inset:0;border:0;width:100%;height:100%;background:rgba(0,0,0,.68);cursor:pointer}
+.exWalletDrawer{position:absolute;top:0;right:0;bottom:0;width:min(470px,100%);background:#0c1519;border-left:1px solid #354448;box-shadow:-30px 0 70px rgba(0,0,0,.45);overflow:auto}
+.exDrawerHeading{position:sticky;z-index:3;top:0;background:#0d1619;border-bottom:1px solid var(--border);padding:17px 21px;display:flex;justify-content:space-between;align-items:center;gap:16px}
+.exDrawerHeading h2{margin:4px 0 0;font-size:20px}
+.exDrawerHeading button{border:1px solid var(--border);background:#172225;color:var(--ink);border-radius:5px;font-size:15px;width:31px;height:31px}
+.exWalletDrawer .walletPanel{border:0;border-radius:0}
+.exWalletDrawer .walletPanel>.swap{padding:20px}
+.exWalletDrawer .tokenPanel{margin:9px}
+@media(max-width:1270px){.exNav{gap:15px}.exPairBar{gap:17px}.exTradingGrid{grid-template-columns:minmax(0,1fr) 305px}.exWorkspace{grid-template-columns:214px minmax(0,1fr)}.exChartControlDisabled{display:none}}
+@media(max-width:1070px){.exWorkspace{grid-template-columns:190px minmax(0,1fr)}.exTradingGrid{grid-template-columns:minmax(0,1fr)}.exPrimaryPane{border-right:0}.exTicket{border-top:1px solid var(--border);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start}.exTicketHeading{grid-column:1/-1}.exSideSwitch{grid-column:1/2}.exTicketBody{grid-column:1/2}.exTicketAccount{grid-column:2/3;grid-row:2;align-self:start;border-top:0;margin-top:16px;padding:16px}.exNav a:nth-child(4){display:none}}
+@media(max-width:800px){.exHeader{flex-wrap:wrap!important;height:auto!important;min-height:62px;padding:10px 16px!important}.exHeaderLeft{flex:1;flex-wrap:wrap}.exHeaderDivider{display:none}.exNav{height:30px;order:2;width:100%;overflow:auto;gap:20px}.exNav a{height:30px}.exHeaderRight{gap:9px}.exNetworkBar{gap:11px;padding:8px 16px}.exNetworkBar>span:nth-child(2){display:none}.exWorkspace{display:flex;flex-direction:column}.exWatchlist{border-right:0;border-bottom:1px solid var(--border)}.exWatchHeader{padding:12px 16px}.exWatchHeader h2{font-size:15px}.exWatchFilters,.exWatchHeadings,.exWatchBottom{display:none}.exWatchRows{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding:0 10px 11px}.exWatchRow{border:1px solid #2a383e;border-radius:5px;padding:11px 9px}.exWatchRowSelected{border-color:var(--accent)}.exWatchQuote small{display:none}.exPairBar{padding:15px}.exMarketInfo{padding:9px 15px}.exChartView{min-height:365px}.exReserveStrip>div{padding:13px 11px}}
+@media(max-width:580px){.exBrand{font-size:15px}.exHeaderRight .exChainPill{display:none}.exHeaderWallet{padding:9px 10px}.exNetworkWarning{display:none}.exNetworkBar>a{margin-left:auto}.exPairBar{gap:15px}.exPairIdentity{width:100%}.exPairStat{min-width:68px}.exPairBar .exPairStat:nth-of-type(4){display:none}.exRefresh{margin-left:0}.exPanelTop{padding:0 12px;gap:7px}.exChartDataBadge{font-size:9px}.exChartView{min-height:330px}.exChartOverlay{width:calc(100% - 65px);max-width:300px}.exChartOverlay strong{font-size:14px}.exChartOverlay p{font-size:11px}.exReserveStrip{grid-template-columns:repeat(2,minmax(0,1fr))}.exReserveStrip>div{border-bottom:1px solid var(--border)}.exTicket{display:block}.exTicketHeading{height:48px}.exTicketAccount{border-top:1px solid var(--border);margin:0}.exActivityTabs{gap:15px;padding:0 11px}.exActivityTableHead{display:none}.exActivityRow{grid-template-columns:1fr 1fr;gap:10px}.exResearchToggle>span:first-child{display:block}.exResearchToggle small{display:block;margin-top:5px}.exFooter{padding:14px;font-size:9px}.exSubfooter>.agentPanel{margin:0 10px 12px}}
+@media(prefers-reduced-motion:reduce){.exWatchRow{transition:none}}
