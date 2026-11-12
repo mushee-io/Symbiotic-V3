@@ -254,6 +254,28 @@ mod tests {
         let other=[7,1,1,5,1,4,b'U',b'S',b'D',b'C',3,1,1];
         assert_eq!(decode_coins(&other,b"TESTUSD",1),Err(AttachmentError::UnexpectedSymbol));
     }
+    #[test] fn reject_duplicate_wrong_and_nft_coin_attachments() {
+        let dup=[7,1,2,5,1,3,b'A',b'M',b'A',3,1,1,5,1,3,b'A',b'M',b'A',3,1,1];
+        assert_eq!(decode_coins(&dup,b"TESTBTC",2),Err(AttachmentError::Duplicate));
+        let negative=[7,1,1,5,1,3,b'A',b'M',b'A',3,0x81,1];
+        assert_eq!(decode_coins(&negative,b"TESTBTC",1),Err(AttachmentError::Encoding));
+        let zero=[7,1,1,5,1,3,b'A',b'M',b'A',3,0];
+        assert_eq!(decode_coins(&zero,b"TESTBTC",1),Err(AttachmentError::InvalidAmount));
+        let nft=[7,1,1,5,1,3,b'A',b'M',b'A',7,0];
+        assert_eq!(decode_coins(&nft,b"TESTBTC",1),Err(AttachmentError::Encoding));
+        let wrong=[7,1,1,5,1,3,b'U',b'S',b'D',3,1,1];
+        assert_eq!(decode_coins(&wrong,b"TESTBTC",1),Err(AttachmentError::UnexpectedSymbol));
+    }
+    #[test] fn canonical_attachment_lengths_and_no_trailing_data() {
+        let normal=[7,1,1,5,1,3,b'A',b'M',b'A',3,1,100];
+        let mut trailing=normal.to_vec();trailing.push(0);
+        assert_eq!(decode_coins(&trailing,b"TESTBTC",1),Err(AttachmentError::Encoding));
+        for n in 0..normal.len() {
+            assert!(decode_coins(&normal[..n],b"TESTBTC",1).is_err());
+        }
+        let missing_pair=[7,1,2,5,1,3,b'A',b'M',b'A',3,1,1,5,1,3,b'A',b'M',b'A',3,1,2];
+        assert_eq!(decode_coins(&missing_pair,b"TESTBTC",2),Err(AttachmentError::Duplicate));
+    }
     #[test] fn uint_encoding_and_strict_bounds() {
         let mut b=[0u8;48];
         for v in [0u128,1,1000,1000000000,MAX_RESERVE,u128::MAX] {
