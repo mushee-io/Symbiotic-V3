@@ -250,6 +250,7 @@ export function evaluateAgent(
     const maxPosition=atomic(config.maxPositionAmaAtomic,"max_position");
     const maxTrade=atomic(config.maxTradeAmaAtomic,"max_trade");
     const gas=atomic(config.gasReserveAmaAtomic,"gas_reserve");
+    if (ama <= gas) return hold("gas_reserve_insufficient");
     const lower=BigInt(config.targetBaseBps-config.inventoryBandBps);
     const upper=BigInt(config.targetBaseBps+config.inventoryBandBps);
     if(inventoryBps>=lower&&inventoryBps<=upper)return hold("inventory_within_band");
