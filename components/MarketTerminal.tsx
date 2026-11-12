@@ -35,6 +35,7 @@ export function MarketTerminal({
   const [quote,setQuote]=useState<NativeSpotQuote|null>(null);
   const [quoteMessage,setQuoteMessage]=useState("");
   const [quoteBusy,setQuoteBusy]=useState(false);
+  const [bottomTab,setBottomTab]=useState<"activity"|"balances"|"pool">("activity");
   const quoteEpoch=useRef(0);
 
   useEffect(()=>{
@@ -116,97 +117,152 @@ export function MarketTerminal({
   const balance=market?.wallet;
   const pool=market?.pool;
   const txs=market?.history ?? null;
-  return <section className="panel terminalPanel" id="m9-terminal">
-    <div className="terminalHeader">
-      <div>
-        <p className="eyebrow">M9 · ON-CHAIN SPOT TERMINAL</p>
-        <h2>{base} <span className="muted">/ AMA</span></h2>
+  const marketStatus=status==="ready"?"Pool custody verified":
+    status==="blocked"?"Awaiting verified liquidity":
+    status==="loading"?"Checking chain state…":"Chain data unavailable";
+  return <section className="exTerminal" id="m9-terminal" aria-label="Native Amadeus spot terminal">
+    <div className="exPairBar">
+      <div className="exPairIdentity">
+        <span className="exPairCoin" aria-hidden="true">{base==="TESTBTC"?"TB":"TU"}</span>
+        <div><h1>{base}<span>/AMA</span></h1><small>Native AMM · Spot</small></div>
       </div>
-      <button type="button" className="walletRefresh"
-        disabled={status==="loading"}
-        onClick={()=>setRefreshKey(i=>i+1)}>Refresh native data</button>
+      <div className="exPairLast"><span>Last price</span><strong>—</strong><small>No verified price</small></div>
+      <div className="exPairStat"><span>24h change</span><strong>—</strong></div>
+      <div className="exPairStat"><span>24h volume</span><strong>—</strong></div>
+      <div className="exPairStat"><span>Pool liquidity</span><strong>{pool?"Verified on-chain":"—"}</strong></div>
+      <button type="button" className="exRefresh" disabled={status==="loading"}
+        onClick={()=>setRefreshKey(n=>n+1)} title="Recheck native pool and public chain reads">↻ <span>Refresh</span></button>
     </div>
-    <div className="terminalMeta" role="status" aria-live="polite">
-      {status==="loading"?"Reading native Amadeus testnet…":
-       status==="unavailable"?"RPC or native data unavailable — no values shown":
-       status==="blocked"?"Read-only · contract/liquidity not independently verified":
-       "Read-only · reserve and Coin custody verified"}
-      {market?.health&&" · Tip "+market.health.height+" · Rooted "+market.health.rootedHeight}
+    <div className="exMarketInfo" role="status" aria-live="polite">
+      <span className={status==="ready"?"exStateOk":"exStatePending"}>{marketStatus}</span>
+      <span>{market?.health?"Rooted #"+market.health.rootedHeight.toLocaleString("en-US"):"No verified rooted snapshot"}</span>
+      <span>AMA only · Testnet</span>
+      <span>All market figures must originate on-chain</span>
     </div>
-    <div className="terminalMetrics">
-      <div><small>Pool BASE reserve</small><strong>{pool?pool.reserveBase+" atomic "+base:"—"}</strong></div>
-      <div><small>Pool AMA reserve</small><strong>{pool?pool.reserveAma+" atomic AMA":"—"}</strong></div>
-      <div><small>Current pool status</small><strong>{pool?"Verified custody":"Unavailable"}</strong></div>
-      <div><small>Token registration</small><strong>{market?.token.status??"Unverified"}</strong></div>
-    </div>
-    <div className="terminalChartPlaceholder" role="status">
-      <div className="eyebrow">HISTORICAL PRICE CHART</div>
-      <strong>No independently verified historical reserve series</strong>
-      <p>Charts will appear only when genuine archived testnet reserve observations are available. No synthetic candles or volume.</p>
-    </div>
-    <div className="terminalBalances">
-      <h3>Public wallet balances</h3>
-      {!account?<p className="muted terminalInset">Connect an Amadeus public wallet to read its real Coin holdings.</p>:
-       !balance?<p className="muted terminalInset">Wallet balances unavailable. No inferred zero balances.</p>:
-       <div className="terminalMetrics">
-         <div><small>AMA native Coin</small><strong>{balance.amaAtomic} atomic AMA</strong></div>
-         <div><small>{base} native Coin</small><strong>{balance.baseAtomic===null?"Not issued / unavailable":balance.baseAtomic+" atomic "+base}</strong></div>
-       </div>}
-      {balance&&<p className="terminalInset muted">Chain-reported holdings only; testnet token ownership and any market value are not implied. <a href={"https://testnet.explorer.ama.one/network/address/"+balance.address} target="_blank" rel="noopener noreferrer">View public account in testnet explorer</a></p>}
-    </div>
-    <div className="terminalQuote">
-      <h3>Reserve-backed exact-input quote</h3>
-      <p className="muted terminalInset">Read-only quote, 30 bps swap fee. Signing and broadcasts remain disabled.</p>
-      <div className="terminalForm">
-        <label>Direction
-          <select value={side} onChange={e=>setSide(e.target.value as SpotSide)}>
-            <option value="BUY">BUY {base} with AMA</option>
-            <option value="SELL">SELL {base} for AMA</option>
-          </select>
-        </label>
-        <label>Amount (atomic {side==="BUY"?"AMA":base})
-          <input inputMode="numeric" placeholder="Exact atomic amount" value={amount} onChange={e=>setAmount(e.target.value)}/>
-        </label>
-        <label>Slippage
-          <select value={slippage} onChange={e=>setSlippage(Number(e.target.value))}>
-            <option value={10}>0.10%</option>
-            <option value={50}>0.50%</option>
-            <option value={100}>1.00%</option>
-            <option value={300}>3.00%</option>
-            <option value={500}>5.00%</option>
-          </select>
-        </label>
+
+    <div className="exTradingGrid">
+      <div className="exPrimaryPane">
+        <section className="exChartPanel" aria-label="Historical market chart">
+          <div className="exPanelTop">
+            <div className="exPanelTitle"><strong>Price chart</strong><span className="exPanelDivider">|</span><span>{base}/AMA</span></div>
+            <span className="exChartControlDisabled" title="Historical chart intervals require verified price observations">
+              15m&nbsp;&nbsp; 1H&nbsp;&nbsp; 4H&nbsp;&nbsp; 1D
+            </span>
+            <span className="exChartDataBadge">Historical data unavailable</span>
+          </div>
+          <div className="exChartView" role="status" aria-label="No independently verified historical spot price series">
+            <div className="exChartGridBg" aria-hidden="true"/>
+            <div className="exChartAxisY" aria-hidden="true"><span>—</span><span>—</span><span>—</span><span>—</span><span>—</span></div>
+            <div className="exChartOverlay">
+              <div className="exChartEmptyGlyph" aria-hidden="true">
+                <span/><span/><span/><span/>
+              </div>
+              <strong>Chart awaiting on-chain data</strong>
+              <p>No finalized price history exists for this verified market yet. Candles will appear only from real archived reserve observations.</p>
+              <a href="/demo">Check deployment readiness ↗</a>
+            </div>
+            <div className="exChartBrand" aria-hidden="true">SYMBIOTIC</div>
+          </div>
+          <div className="exChartBottom">
+            <span>HISTORICAL PRICE · NOT AVAILABLE</span>
+            <span>Zero simulated candles</span>
+          </div>
+        </section>
+
+        <section className="exReserveStrip" aria-label="AMM reserve status">
+          <div><small>BASE RESERVE</small><strong>{pool?pool.reserveBase+" atomic":"—"}</strong><span>{base}</span></div>
+          <div><small>AMA RESERVE</small><strong>{pool?pool.reserveAma+" atomic":"—"}</strong><span>AMA</span></div>
+          <div><small>COIN REGISTRY</small><strong>{market?.token.status==="registered"?"Registered":"—"}</strong><span>{market?.token.status==="unregistered"?"Symbol not issued":"Native testnet"}</span></div>
+          <div><small>POOL STATUS</small><strong>{pool?"Reconciled":"Not verified"}</strong><span>No synthetic depth</span></div>
+        </section>
+
+        <section id="exchange-activity" className="exActivityPanel" aria-label="Account, activity and pool information">
+          <div className="exActivityTabs" role="tablist" aria-label="Terminal details">
+            <button type="button" role="tab" aria-selected={bottomTab==="activity"}
+              className={bottomTab==="activity"?"exActivityActive":""} onClick={()=>setBottomTab("activity")}>On-chain activity</button>
+            <button type="button" role="tab" aria-selected={bottomTab==="balances"}
+              className={bottomTab==="balances"?"exActivityActive":""} onClick={()=>setBottomTab("balances")}>Wallet balances</button>
+            <button type="button" role="tab" aria-selected={bottomTab==="pool"}
+              className={bottomTab==="pool"?"exActivityActive":""} onClick={()=>setBottomTab("pool")}>Pool overview</button>
+          </div>
+          {bottomTab==="activity"&&<div className="exActivityBody">
+            <div className="exActivityTableHead"><span>Transaction / Type</span><span>Input</span><span>Rooted block</span><span>Explorer</span></div>
+            {!account?<div className="exNoActivity"><strong>No wallet selected</strong><p>Connect your AMA wallet to inspect its independently verified finalized swap calls.</p></div>:
+             !pool||txs===null?<div className="exNoActivity"><strong>On-chain swap history unavailable</strong><p>Neither a pool nor completed trades are claimed until contract and receipt evidence is verified.</p></div>:
+             txs.length===0?<div className="exNoActivity"><strong>No verified swap calls found</strong><p>History is empty for this connected wallet and certified pool.</p></div>:
+             <div className="exActivityRows">{txs.map(tx=><div className="exActivityRow" key={tx.hash}>
+               <div><strong>{tx.side} {tx.pair}</strong><small>Finalized native contract call · received output unverified</small></div>
+               <span>{tx.amountInAtomic} {tx.attachedSymbol} atomic</span>
+               <span>{tx.height}</span>
+               <a href={tx.explorerUrl} target="_blank" rel="noopener noreferrer">View receipt ↗</a>
+             </div>)}</div>}
+          </div>}
+          {bottomTab==="balances"&&<div className="exActivityBody exBalancesBody">
+            {!account?<div className="exNoActivity"><strong>Wallet not connected</strong><p>Connect the Amadeus extension to read native public balances.</p></div>:
+             !balance?<div className="exNoActivity"><strong>Balance data unavailable</strong><p>No inferred or mocked wallet holdings are displayed.</p></div>:
+             <><div><span>AMA · native balance</span><strong>{balance.amaAtomic} atomic</strong></div>
+               <div><span>{base} · native balance</span><strong>{balance.baseAtomic===null?"Unissued / unavailable":balance.baseAtomic+" atomic"}</strong></div>
+               <a href={"https://testnet.explorer.ama.one/network/address/"+balance.address}
+                 target="_blank" rel="noopener noreferrer">Inspect account on explorer ↗</a></>}
+          </div>}
+          {bottomTab==="pool"&&<div className="exActivityBody exBalancesBody">
+            <div><span>Market</span><strong>{base}/AMA</strong></div>
+            <div><span>Native custody reconciliation</span><strong>{pool?"Verified for current snapshot":"Not yet verified"}</strong></div>
+            <div><span>LP share supply</span><strong>{pool?pool.totalLp+" atomic":"—"}</strong></div>
+            <div><span>Pool contract</span><strong>{pool?pool.address:"No certified deployment"}</strong></div>
+            <p>No order book is fabricated. Native liquidity will be displayed only after an authenticated AMM pool is funded.</p>
+          </div>}
+        </section>
       </div>
-      <div className="terminalActions">
-        <button type="button" className="walletRefresh" onClick={()=>void getQuote()}
-          disabled={!pool || quoteBusy || !/^[1-9][0-9]*$/.test(amount)}>
-          {quoteBusy?"Verifying…":"Get on-chain quote"}
-        </button>
-        <button type="button" disabled className="walletConnect">Execute swap — locked</button>
-      </div>
-      <div className="terminalMetrics">
-        <div><small>Receive (expected)</small><strong>{quote?quote.expectedOut+" atomic "+quote.outputSymbol:"—"}</strong></div>
-        <div><small>Minimum received</small><strong>{quote?quote.minimumOut+" atomic "+quote.outputSymbol:"—"}</strong></div>
-      </div>
-      {quoteMessage&&<p className="walletError" role="alert">{quoteMessage}</p>}
+
+      <aside className="exTicket" aria-label="Spot trading ticket">
+        <div className="exTicketHeading"><strong>Spot trade</strong><span>TESTNET · READ ONLY</span></div>
+        <div className="exSideSwitch" role="group" aria-label="Spot order side">
+          <button className={side==="BUY"?"exBuySelected":""} type="button"
+            aria-pressed={side==="BUY"} onClick={()=>setSide("BUY")}>Buy</button>
+          <button className={side==="SELL"?"exSellSelected":""} type="button"
+            aria-pressed={side==="SELL"} onClick={()=>setSide("SELL")}>Sell</button>
+        </div>
+        <div className="exTicketBody">
+          <div className="exTicketMarket"><span>Market</span><strong>{base}/AMA</strong></div>
+          <div className="exTicketMarket"><span>Execution method</span><strong>AMM exact input</strong></div>
+          <div className="exTicketMarket"><span>Price</span><strong>—</strong></div>
+          <label className="exInputLabel">
+            <span>You pay <small>{side==="BUY"?"AMA":base} · atomic units</small></span>
+            <div className="exInputWrapper">
+              <input type="text" inputMode="numeric" value={amount}
+                onChange={e=>setAmount(e.target.value)} placeholder="0" aria-label="Exact atomic input amount"/>
+              <strong>{side==="BUY"?"AMA":base}</strong>
+            </div>
+          </label>
+          <label className="exInputLabel">
+            <span>Slippage tolerance</span>
+            <select className="exSlippage" value={slippage} onChange={e=>setSlippage(Number(e.target.value))}>
+              <option value={10}>0.10%</option><option value={50}>0.50%</option>
+              <option value={100}>1.00%</option><option value={300}>3.00%</option>
+              <option value={500}>5.00%</option>
+            </select>
+          </label>
+          <div className="exQuoteDetails">
+            <div><span>Swap fee</span><strong>0.30% (AMM design)</strong></div>
+            <div><span>Expected receive</span><strong>{quote?quote.expectedOut+" atomic "+quote.outputSymbol:"—"}</strong></div>
+            <div><span>Minimum receive</span><strong>{quote?quote.minimumOut+" atomic "+quote.outputSymbol:"—"}</strong></div>
+          </div>
+          <button className="exPreviewButton" type="button"
+            disabled={!pool||quoteBusy||!/^[1-9][0-9]*$/.test(amount)}
+            onClick={()=>void getQuote()}>{quoteBusy?"Checking reserves…":"Preview on-chain quote"}</button>
+          {quoteMessage&&<p className="exTicketError" role="alert">{quoteMessage}</p>}
+          <button className="exTradeLocked" type="button" disabled>
+            {side==="BUY"?"Buy ":"Sell "}{base} — Unavailable
+          </button>
+          <p className="exTicketNotice">Signing and swaps stay locked until verified native token issuance, deployed pools, real reserves, wallet approvals and finalized testnet receipts.</p>
+        </div>
+        <div className="exTicketAccount">
+          <span>ACCOUNT</span>
+          <strong>{account?account.slice(0,8)+"…"+account.slice(-6):"Not connected"}</strong>
+          <small>{account?"Wallet public account connected":"Use Connect Wallet in the header to view native holdings."}</small>
+        </div>
+      </aside>
     </div>
-    <div className="terminalHistory">
-      <h3>Finalized native swap calls</h3>
-      {!account?<p className="terminalInset muted">Connect a wallet to query its on-chain testnet transaction history.</p>:
-       !pool || txs===null?<p className="terminalInset muted">History unavailable until the native pool and wallet are verified. No invented transactions.</p>:
-       txs.length===0?<p className="terminalInset muted">No independently verified finalized swap calls were found for this wallet.</p>:
-       <div className="terminalTxList">
-         {txs.map(tx=><article key={tx.hash}>
-           <div className="terminalTxTop">
-             <strong>{tx.side} · {tx.pair}</strong>
-             <small>Finalized · height {tx.height}</small>
-           </div>
-           <p>{tx.amountInAtomic} atomic {tx.attachedSymbol} sent · minimum output {tx.minimumOutAtomic} atomic units</p>
-           <small>Actual output and trade value not independently reconciled</small>
-           <a href={tx.explorerUrl} target="_blank" rel="noopener noreferrer">View verified tx on Amadeus testnet explorer</a>
-         </article>)}
-       </div>}
-    </div>
-    <p className="terminalFooter">M3/M4/M6/M7/M8 live acceptance remains open. No artificial token prices, volume or trading history. AMA is the only quote currency.</p>
   </section>;
 }
