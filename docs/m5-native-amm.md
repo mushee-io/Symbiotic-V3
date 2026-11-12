@@ -6,7 +6,7 @@ Tracking: https://github.com/mushee-io/Symbiotic-V3/issues/5
 
 M5 implements deterministic, off-chain reference AMM math and a portable no_std Rust math library. It is not a live deployed AMM. No pools, reserves, swaps or volume have been created on-chain, and the swap UI remains disabled. The native guest dispatch, state custody, final deployable ELF and two testnet contracts belong to M6.
 
-The Amadeus native contract runtime is RISC-V (RV64IM + Zba/Zbb) ELF, not Solidity, EVM, Aiken or WASM. Official sources:
+The Amadeus native contract runtime is RISC-V (RV64IM + Zba/Zbb) ELF, not Solidity, EVM or WASM. Official sources:
 - https://github.com/amadeusprotocol/node/blob/main/contract_samples/riscv/README.md
 - https://github.com/amadeusprotocol/node/blob/main/contract_samples/riscv/examples/deposit.rs
 - https://github.com/amadeusprotocol/node/blob/main/contract_samples/riscv/src/lib.rs
