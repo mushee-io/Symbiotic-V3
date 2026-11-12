@@ -178,5 +178,5 @@ test("mint cannot be declared verified if supply differs on chain", async () => 
     sdk: fixture.sdk, provider: fixture.provider, account: OWNER,
     network: "testnet", rpcHealthy: true,
   }, "TESTBTC"), TokenIssuanceError);
-  assert.deepEqual(fixture.calls(), { submitted: 1, signed: 1 });
+  assert.deepEqual(fixture.calls(), { submitted: 0, signed: 0 });
 });
