@@ -2,11 +2,13 @@
 import {useEffect,useState} from "react";
 import {MARKETS,COMING_SOON} from "@/lib/markets";
 import { AmadeusWalletPanel } from "@/components/AmadeusWalletPanel";
+import { MarketTerminal } from "@/components/MarketTerminal";
 
 export default function Home(){
   const [pair,setPair]=useState(0);
   const [status,setStatus]=useState("Checking native testnet...");
   const [rpcHealthy,setRpcHealthy]=useState(false);
+  const [walletAccount,setWalletAccount]=useState<string|null>(null);
 
   useEffect(()=>{
     let active=true;
@@ -44,30 +46,20 @@ export default function Home(){
       </section>
       <div className="status" role="status">{status}</div>
       <div className="main">
-        <section className="panel">
-          <h3>Spot markets · AMA pairs only</h3>
-          <div className="pairs">{MARKETS.map((item,index)=>
-            <button className={index===pair?"selected":""} onClick={()=>setPair(index)} key={item.id}>{item.label}</button>
-          )}</div>
-          <div className="empty">
-            <div className="eyebrow">{market.label}</div>
-            <h2>Awaiting native liquidity pools</h2>
-            <p>Only independently verified reserves and confirmed swaps will generate displayed prices and trading activity. No simulated market data.</p>
-          </div>
-        </section>
-        <div className="walletColumn"><aside className="panel">
-          <h3>Spot swap · AMA quote</h3>
-          <div className="swap">
-            <p className="muted">M8 native BUY / SELL previews are available inside the connected AMA wallet below. Execution is still blocked pending M3–M7 native testnet evidence.</p>
-            <label>Pay</label>
-            <div className="field">— <strong>AMA</strong></div>
-            <label>Receive</label>
-            <div className="field">— <strong>{market.base}</strong></div>
-            <a className="full" href="#m8-spot">Review native BUY / SELL</a>
-            <p className="note">Testnet build in progress. No token issuance, native pools, real swaps or AI orders have been verified yet.</p>
-          </div>
-        </aside>
-        <AmadeusWalletPanel rpcHealthy={rpcHealthy} />
+        <div className="terminalColumn">
+          <section className="panel terminalMarketSwitch" aria-label="Select AMA spot market">
+            <h3>Spot markets · AMA quote only</h3>
+            <div className="pairs">{MARKETS.map((item,index)=>
+              <button type="button" aria-pressed={index===pair}
+                className={index===pair?"selected":""} onClick={()=>setPair(index)} key={item.id}>
+                {item.label}
+              </button>
+            )}</div>
+          </section>
+          <MarketTerminal base={market.base} account={walletAccount} rpcHealthy={rpcHealthy} />
+        </div>
+        <div className="walletColumn">
+          <AmadeusWalletPanel rpcHealthy={rpcHealthy} onAccountChange={setWalletAccount} />
         </div>
       </div>
       <section className="future">
