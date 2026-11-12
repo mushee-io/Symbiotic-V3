@@ -41,7 +41,9 @@ test("home and trading terminal explicitly link to user-run native testnet setup
   // The latest branded homepage uses a CSS module, which standalone Node TSX
   // tests cannot import without Next.js. Check its exact source instead.
   const home=readFileSync(new URL("../app/page.tsx",import.meta.url),"utf8");
-  const Trade=(await import("../app/trade/page")).default;
+  const Trade=(await import("../app/trade/onchain/page")).default;
+  const demo=readFileSync(new URL("../app/sandbox/page.tsx",import.meta.url),"utf8");
   assert.match(home,/href="\/setup"/);
   assert.match(renderToStaticMarkup(createElement(Trade)),/href="\/setup"/);
+  assert.match(demo,/href="\/setup"/);
 });
