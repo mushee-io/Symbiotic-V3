@@ -38,6 +38,29 @@ jobs:
         timeout-minutes: 2
         run: npm run tokens:check
 
+  m11-security:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Assert native testnet release guards (static source only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts
+          node scripts/check-m11-security.mjs > artifacts/m11-security-source-evidence.json
+          node -e 'const f=require("./artifacts/m11-security-source-evidence.json"); if(f.productionReleaseAuthorized!==false || f.liveSwapReceiptsVerified!==false || f.externalSecurityAuditCompleted!==false) process.exit(1)'
+      - name: Upload static security gate report (NOT VM or external audit)
+        uses: actions/upload-artifact@v4
+        with:
+          name: m11-static-security-evidence
+          path: artifacts/m11-security-source-evidence.json
+          retention-days: 30
+
   riscv-elf:
     runs-on: ubuntu-latest
     permissions:
