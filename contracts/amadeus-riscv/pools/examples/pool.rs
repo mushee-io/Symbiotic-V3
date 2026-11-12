@@ -20,6 +20,11 @@ const INITIALIZED: &[u8] = b"initialized";
 const PAUSED: &[u8] = b"paused";
 const ADMIN: &[u8] = b"admin";
 
+// SECURITY: deliberately unbound in public CI binaries. A release must be
+// separately reviewed, bound to the ACTUAL verified 48-byte native deployer
+// account and rebuilt, or init() always aborts. Prevents first-caller takeover.
+const APPROVED_INITIALIZER: [u8; h::KEY_BYTES] = [0u8; h::KEY_BYTES];
+
 #[cfg(target_arch="riscv64")]
 #[panic_handler]
 fn panic(_: &core::panic::PanicInfo) -> ! { h::abort(b"guest_panic") }
@@ -65,8 +70,13 @@ fn init() -> ! {
     h::unlocked();
     h::ensure_arg_count(0);
     if h::kv_exists(INITIALIZED) { h::abort(b"already_initialized"); }
-    let (base,ama) = h::input_coins(BASE,2);
     let owner = h::caller();
+    // Refuse unbound public binary and any first caller other than the
+    // immutable, independently attested deployment administrator.
+    if !h::authorized_initializer(&owner, &APPROVED_INITIALIZER) {
+        h::abort(b"initializer_not_authorized");
+    }
+    let (base,ama) = h::input_coins(BASE,2);
     let receipt=math::initial_liquidity(base,ama)
         .unwrap_or_else(|_|h::abort(b"invalid_initial_liquidity"));
     h::put_uint(RES_BASE,base);
