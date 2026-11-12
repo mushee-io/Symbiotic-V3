@@ -244,10 +244,13 @@ mod tests {
     // native vecpak encoder uses 0x07 map, count; 0x05 binary, byte length;
     // 0x03 integer, byte length. 1-byte lengths are canonical for small values.
     #[test] fn attachment_gate() {
-        let one = [7,1,1,5,1,1,b'A',b'M',b'A',3,1,100];
+        let one = [7,1,1,5,1,3,b'A',b'M',b'A',3,1,100];
         assert_eq!(decode_coins(&one,b"TESTBTC",1),Ok((0,100)));
         assert_eq!(decode_coins(&one,b"TESTBTC",2),Err(AttachmentError::Count));
         assert_eq!(decode_coins(&one,b"TESTUSD",1),Ok((0,100)));
+        let pair = [7,1,2,5,1,3,b'A',b'M',b'A',3,1,100,5,1,7,b'T',b'E',b'S',b'T',b'B',b'T',b'C',3,1,100];
+        assert_eq!(decode_coins(&pair,b"TESTBTC",2),Ok((100,100)));
+        assert_eq!(decode_coins(&pair,b"TESTUSD",2),Err(AttachmentError::UnexpectedSymbol));
         let other=[7,1,1,5,1,4,b'U',b'S',b'D',b'C',3,1,1];
         assert_eq!(decode_coins(&other,b"TESTUSD",1),Err(AttachmentError::UnexpectedSymbol));
     }
