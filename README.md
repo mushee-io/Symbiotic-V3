@@ -46,7 +46,8 @@ See the [12 detailed milestones](docs/roadmap.md) and [M1–M12 GitHub tracking 
 **M5:** Deterministic constant-product AMM and a portable native-RISC-V Rust math reference, with two AMA-only pools and locked LP share design. No deployed contracts or live markets. See [M5 AMM architecture](docs/m5-native-amm.md).  
 **M6:** Two feature-locked native Amadeus RISC-V ELF pool contracts compile with custody, LP ownership, pause, slippage and reentrancy guards. **No chain deployment, initialization, or runtime execution verified yet**; M3/M4 prerequisites block broadcast. See [M6 native contracts](docs/m6-native-riscv-contracts.md).  
 **M7:** Native AMA-only liquidity preparation, unsigned wallet-approval intents, read-only LP/reserve-to-Coin-custody reconciliation and finalized receipt verification code; **no real funding or wallet attachment signing yet**. See [M7 native liquidity](docs/m7-native-liquidity.md).  
-**M8–M9:** Verified on-chain swaps and market data only after funded contracts and real receipts.  
+**M8:** Native AMA-only BUY/SELL exact-input quotes from independently reconciled reserves, slippage/deadline-safe unsigned Coin attachment intents, a fail-closed spot panel, and finalized receipt/wallet balance verification code. **No live swaps, real pool activity or wallet attached-coin signing verified.** See [M8 native spot](docs/m8-native-spot.md).  
+**M9:** Genuine on-chain market data and history only after real wallet transactions and funded pools.  
 **M10–M12:** Guardrailed AI market making, security and public testnet demo.
 
 ## Sources
