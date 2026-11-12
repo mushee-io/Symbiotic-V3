@@ -12,7 +12,7 @@
 
 ## Present implementation
 
-This is currently a **spot interface and native testnet RPC scaffold**, **not a working exchange**. Token issuance, liquidity-pool contracts, wallet connections, spot swaps and AI agent execution require their respective milestones and independently verified testnet receipts. Inactive controls stay disabled.
+This is currently a **spot interface with native testnet RPC health and read-only AMA wallet balance support**, **not a working exchange**. Token issuance, liquidity-pool contracts, wallet connections, spot swaps and AI agent execution require their respective milestones and independently verified testnet receipts. Inactive controls stay disabled.
 
 ## Getting started
 
@@ -41,7 +41,8 @@ See the [12 detailed milestones](docs/roadmap.md) and [M1–M12 GitHub tracking 
 
 **M1:** Amadeus-only repository extraction, branding, and CI.  
 **M2:** Verify native testnet connectivity and runtime failure modes.  
-**M3–M9:** Native wallets, two test tokens, pools, real liquidity and spot trading.  
+**M3:** Native extension discovery, opt-in account connection, local disconnect and live AMA testnet balance reads are implemented; the two-wallet witness and network-attestation gate remain pending. See [M3 wallet guide](docs/m3-native-wallet.md).  
+**M4–M9:** Two test tokens, pools, real liquidity and spot trading.  
 **M10–M12:** Guardrailed AI market making, security and public testnet demo.
 
 ## Sources
