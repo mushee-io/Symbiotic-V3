@@ -79,7 +79,7 @@ test("query limits admit only exact integer policy and session controls, reject 
     {base:"TESTUSD",maxSlippageBps:"10000"},
     {base:"TESTBTC",operatorPaused:"yes"},
     {base:"TESTUSD",maxTradeAmaAtomic:"1e9"},
-  ]) assert.throws(()=>parseAgentQuery(new URLSearchParams(entries)),Error);
+  ]) assert.throws(()=>parseAgentQuery(new URLSearchParams(Object.entries(entries).filter((entry):entry is [string,string]=>typeof entry[1]==="string"))),Error);
   const dup=new URLSearchParams("base=TESTBTC&maxSlippageBps=30&maxSlippageBps=40");
   assert.throws(()=>parseAgentQuery(dup),Error);
 });
