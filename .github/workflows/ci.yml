@@ -22,6 +22,8 @@ jobs:
       - run: npm test
       - name: Test portable native RISC-V AMM mathematics (Rust no_std host tests)
         run: cargo test --manifest-path contracts/amadeus-riscv/math/Cargo.toml --offline
+      - name: Test native pool host ABI helpers (Rust no_std host tests)
+        run: cargo test --manifest-path contracts/amadeus-riscv/pools/Cargo.toml --lib --offline
       - run: npm run build
       - name: Live Amadeus testnet RPC smoke test (nonblocking)
         # A public testnet outage should not mask successful deterministic tests.
@@ -35,3 +37,37 @@ jobs:
         continue-on-error: true
         timeout-minutes: 2
         run: npm run tokens:check
+
+  riscv-elf:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install nightly Rust with native source toolchain
+        run: rustup toolchain install nightly --profile minimal --component rust-src
+      - name: Build and verify both native pair-specific ELF guests
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd contracts/amadeus-riscv/pools
+          export RUSTFLAGS="-C panic=abort"
+          TARGET="$PWD/riscv64im-zba-zbb-none.json"
+          mkdir -p artifacts
+          for pair in testbtc testusd; do
+            cargo +nightly build --release --example pool --features "$pair" --target "$TARGET" \
+              -Z build-std=core -Z json-target-spec
+            cp target/riscv64im-zba-zbb-none/release/examples/pool "artifacts/$pair-ama.elf"
+            test "$(head -c 4 "artifacts/$pair-ama.elf" | od -An -tx1 | tr -d ' \n')" = "7f454c46"
+            readelf -h "artifacts/$pair-ama.elf" | grep -E 'Machine:.*RISC-V'
+            test "$(stat -c %s "artifacts/$pair-ama.elf")" -le 524288
+            sha256sum "artifacts/$pair-ama.elf"
+          done
+          test "$(sha256sum artifacts/testbtc-ama.elf | awk '{print $1}')" != \
+               "$(sha256sum artifacts/testusd-ama.elf | awk '{print $1}')"
+      - name: Upload unsigned build artifacts and checksums (never deployed)
+        uses: actions/upload-artifact@v4
+        with:
+          name: amadeus-m6-riscv-pool-elf
+          path: contracts/amadeus-riscv/pools/artifacts/*.elf
+          retention-days: 30
