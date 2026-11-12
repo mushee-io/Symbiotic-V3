@@ -43,7 +43,7 @@ function fakeTx(intent:{contract:string;method:string;args:readonly string[];sig
         metadata:{entry_height:77,status:opts.finalized===false?"confirmed":"finalized"},
       };
     },
-  } as unknown as Pick<AmadeusSDK,"transaction">;
+  } as unknown as AmadeusSDK["transaction"];
   return {transaction,calls:()=>fetched};
 }
 
@@ -51,7 +51,7 @@ test("finalized native add-liquidity receipt checks signer, method and exact res
   const intent=buildAddLiquidityIntent(before,OWNER,"500000","1000000","1",100,120);
   const after=ledger(intent);
   const sdk=fakeTx(intent);
-  const result=await verifyFinalizedLiquidityReceipt(sdk.transaction,HASH,intent,before,after);
+  const result=await verifyFinalizedLiquidityReceipt(sdk,HASH,intent,before,after);
   assert.equal(result.status,"finalized_and_reconciled");
   assert.equal(result.operation,"add_liquidity");
   assert.equal(result.hash,HASH);
@@ -72,7 +72,7 @@ test("finalized native LP withdrawal must reduce reserves and caller shares by e
     totalLp:String(BigInt(before.totalLp)-change(intent.expected.lp)),
     ownerLp:String(BigInt(before.ownerLp!)-change(intent.expected.lp)),
   };
-  const result=await verifyFinalizedLiquidityReceipt(fakeTx(intent).transaction,HASH,intent,before,after);
+  const result=await verifyFinalizedLiquidityReceipt(fakeTx(intent),HASH,intent,before,after);
   assert.equal(result.changeLp,"-1000");
   assert.equal(result.operation,"remove_liquidity");
 });
@@ -81,9 +81,9 @@ test("hash alone, incorrect method, unfinalized execution and failed receipt are
   const intent=buildAddLiquidityIntent(before,OWNER,"500000","1000000","1",100,120);
   const after=ledger(intent);
   for(const flags of [{success:false},{finalized:false},{wrongMethod:true}]) {
-    await assert.rejects(verifyFinalizedLiquidityReceipt(fakeTx(intent,flags).transaction,HASH,intent,before,after));
+    await assert.rejects(verifyFinalizedLiquidityReceipt(fakeTx(intent,flags),HASH,intent,before,after));
   }
-  await assert.rejects(verifyFinalizedLiquidityReceipt(fakeTx(intent).transaction,"notahash",intent,before,after));
+  await assert.rejects(verifyFinalizedLiquidityReceipt(fakeTx(intent),"notahash",intent,before,after));
 });
 
 test("no fabricated success on stale or unreconciled custody/LP owner state",async()=>{
@@ -97,6 +97,6 @@ test("no fabricated success on stale or unreconciled custody/LP owner state",asy
     {...after, reserveBase:before.reserveBase},
     {...after,reconciled:false as true},
   ]) {
-    await assert.rejects(verifyFinalizedLiquidityReceipt(fakeTx(intent).transaction,HASH,intent,before,modified));
+    await assert.rejects(verifyFinalizedLiquidityReceipt(fakeTx(intent),HASH,intent,before,modified));
   }
 });
