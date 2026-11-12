@@ -109,7 +109,7 @@ export default function SandboxPage(){
   const lo=Math.min(...values)*0.985, hi=Math.max(...values)*1.015;
   const pts=values.map((p,i)=>`${(i/(values.length-1))*100},${90-(p-lo)/(hi-lo)*80}`).join(" ");
   return <div className="sb">
-    <header className="sbTop"><a href="/" className="sbLogo">◈ SYMBASIS <b>DEMO</b></a><nav><a href="/">Home</a><a href="/trade/onchain">Real testnet status</a><a href="/demo">Evidence</a><a className="sbCurrent" href="/trade">Trade demo</a></nav><span className="sbBadge">SIMULATION ONLY</span></header>
+    <header className="sbTop"><a href="/" className="sbLogo">◈ SYMBASIS <b>DEMO</b></a><nav><a href="/">Home</a><a href="/trade/onchain">Real testnet status</a><a href="/setup">Get test AMA</a><a href="/demo">Evidence</a><a className="sbCurrent" href="/trade">Trade demo</a></nav><span className="sbBadge">SIMULATION ONLY</span></header>
     <div className="sbAlert" role="status"><strong>INTERACTIVE DEMO · NO ON-CHAIN EXECUTION</strong><span>All prices, funds, charts and transactions are fictional, local browser state. AMA testnet tokens are not used.</span></div>
     <main className="sbMain">
       <div className="sbHeading"><div><p className="sbKicker">AMA-QUOTED SPOT · PRODUCT WALKTHROUGH</p><h1>Market-maker <em>sandbox.</em></h1><p>Test how automated inventory rebalancing and constant-product swaps behave before native Amadeus deployment.</p></div><button className="sbReset" onClick={()=>{setState(initialDemoState());setRunning(true);setMessage("Demo restarted with simulated opening activity.");}}>↻ Reset demo</button></div>
