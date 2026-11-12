@@ -20,7 +20,7 @@ test("demo keeps exactly two AMA quote markets",()=>{
   assert.doesNotMatch(page,/USDC\/|ETH\/|SOL\/|TESTBTC\/TESTUSD/);
 });
 test("demo supports swaps, inventory bounded MM cycles and reset",()=>{
-  for(const phrase of ["Simulate {side}","Run one MM cycle","Reset demo","FEE=0.003","share<0.45","share>0.55","Math.min(5","fresh()"]){
+  for(const phrase of ["Simulate {side}","Run extra MM cycle","Reset demo","FEE=0.003","share<0.45","share>0.55","Math.min(5","fresh()"]){
     assert.ok(page.includes(phrase),phrase);
   }
 });
