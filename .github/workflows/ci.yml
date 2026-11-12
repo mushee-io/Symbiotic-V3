@@ -95,3 +95,32 @@ jobs:
           name: amadeus-m6-riscv-pool-elf
           path: contracts/amadeus-riscv/pools/artifacts/
           retention-days: 30
+
+
+  m12-demo:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Generate reproducible public-demo source evidence (not chain or deployment evidence)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts
+          node scripts/check-m12-evidence.mjs > artifacts/m12-public-demo-source-evidence.json
+          node -e 'const e=require("./artifacts/m12-public-demo-source-evidence.json"); if(e.tradingEnabled!==false || e.productionSigningEnabled!==false || e.fourRealSwapReceiptsVerified!==false || e.publicVercelDeploymentIndependentlyVerified!==false || e.grantAwardConfirmed!==false || e.externalSecurityAuditCompleted!==false)process.exit(1)'
+          sha256sum artifacts/m12-public-demo-source-evidence.json > artifacts/m12-public-demo-source-evidence.sha256
+      - name: Upload source manifest, SHA-256 checksum and public documentation
+        uses: actions/upload-artifact@v4
+        with:
+          name: m12-public-demo-evidence
+          path: |
+            artifacts/m12-public-demo-source-evidence.json
+            artifacts/m12-public-demo-source-evidence.sha256
+            docs/m12-public-testnet-demo.md
+            docs/m12-amadeus-ecosystem-proposal.md
+          retention-days: 30
