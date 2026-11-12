@@ -6,7 +6,7 @@
 
 - **Spot trading first:** the initial testnet markets are `TESTBTC / AMA` and `TESTUSD / AMA`.
 - **AMA-only quote currency:** every token launched or listed by Symbiotic V3 will pair against native **AMA**. No alternative quote tokens or cross-chain settlement in the MVP.
-- **AI liquidity and execution tools:** an AI-powered market-making agent is planned for M10, **not yet operational**. It will use real pool liquidity, strict operator-defined risk limits and verifiable transactions. No artificial trading volume.
+- **AI-assisted liquidity research:** M10 adds a deterministic Amadeus-native spot risk and inventory strategy, SHA-256 decision audits and operator-preview pause/kill controls. **There is no live AI model or executing market-making agent.** Independent price/PnL evidence, authenticated operator controls and real spot transactions are mandatory before future activation. No artificial volume.
 - **Future markets:** Perpetuals, RWA, Notional and Options are **Coming Soon** and cannot execute orders.
 - **Smart contracts:** native Amadeus RISC-V ELF contract integration; this project does not use an imported foreign-chain execution environment.
 
@@ -48,6 +48,7 @@ See the [12 detailed milestones](docs/roadmap.md) and [M1–M12 GitHub tracking 
 **M7:** Native AMA-only liquidity preparation, unsigned wallet-approval intents, read-only LP/reserve-to-Coin-custody reconciliation and finalized receipt verification code; **no real funding or wallet attachment signing yet**. See [M7 native liquidity](docs/m7-native-liquidity.md).  
 **M8:** Native AMA-only BUY/SELL exact-input quotes from independently reconciled reserves, slippage/deadline-safe unsigned Coin attachment intents, a fail-closed spot panel, and finalized receipt/wallet balance verification code. **No live swaps, real pool activity or wallet attached-coin signing verified.** See [M8 native spot](docs/m8-native-spot.md).  
 **M9:** Responsive two-market AMA spot terminal with read-only real native wallet balances, token registration, certified reserve/custody status, M8 quote integration, and canonical finalized native swap-call history with testnet explorer links. **Charts, actual fills, volume and trading remain unavailable without independently verified on-chain records.** See [M9 native terminal](docs/m9-native-terminal.md).  
+**M10:** Read-only AI-assisted AMA market-making research with strict strategy/inventory/budget/slippage/daily-loss policies, independent-source HOLD gates, default pause/kill controls, deterministic SHA-256 decision envelopes and explicit no-sign/no-broadcast enforcement. **No live autonomous trading or persistent production control service.** See [M10 native agent](docs/m10-native-agent.md).  
 **M10–M12:** Guardrailed AI market making, security and public testnet demo.
 
 ## Sources
