@@ -5,7 +5,7 @@ import {
 } from "./amadeus-tokens";
 import { nativeTestnetSdk } from "./amadeus";
 import { inspectTestnet } from "./amadeus-health";
-import type { AmadeusWalletProvider } from "./amadeus-wallet";
+import { signingReadiness, type AmadeusWalletProvider } from "./amadeus-wallet";
 
 /**
  * Native browser signing is user-approved; this does NOT accept a seed or key.
@@ -86,6 +86,11 @@ export type IssueTokenDeps = {
 export async function issueNativeTestToken(deps: IssueTokenDeps, rawSymbol: string) {
   const symbol = requireM4Symbol(rawSymbol);
   const account = requireIssuer(deps.account, deps.network, deps.rpcHealthy);
+  // A wallet-supplied network label is not independent M3 two-wallet proof.
+  // Fail before signer invocation or network submission while M3 is open.
+  if (!signingReadiness(deps.provider, account, deps.network as "testnet" | "wrong_network" | "unverified", deps.rpcHealthy)) {
+    throw new TokenIssuanceError("m3_two_wallet_signing_domain_unverified");
+  }
   if (!deps.provider.signTransaction) throw new TokenIssuanceError("wallet_cannot_sign");
   await inspectTestnet(deps.sdk);
   const existing = await readTokenRegistration(deps.sdk, symbol);
