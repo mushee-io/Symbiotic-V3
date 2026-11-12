@@ -1,4 +1,5 @@
 import type { AmadeusSDK } from "@amadeus-protocol/sdk";
+import { fromBase58 } from "@amadeus-protocol/sdk";
 import { require48ByteAddress, LiquidityUnavailableError } from "../liquidity/deployments";
 import { parseActualCoinBalance, type PoolSnapshot } from "../liquidity/read";
 import { quoteNativeSpot } from "./quote";
@@ -57,8 +58,13 @@ export async function verifyFinalizedNativeSwap(
   after: PoolSnapshot,
   walletBefore: TraderCoinBalances,
   walletAfter: TraderCoinBalances,
+  independentlyRootedHeight: number,
 ) {
-  if (!/^[1-9A-HJ-NP-Za-km-z]{32,100}$/.test(signedHash) ||
+  let nativeHash: Uint8Array;
+  try { nativeHash = fromBase58(signedHash); }
+  catch { throw new LiquidityUnavailableError("invalid_native_swap_hash"); }
+  if (nativeHash.length !== 32 ||
+      !Number.isSafeInteger(independentlyRootedHeight) || independentlyRootedHeight < 0 ||
       intent.walletApprovalRequired !== true ||
       intent.broadcastEnabled !== false ||
       intent.method !== "swap_exact_in" ||
@@ -80,6 +86,7 @@ export async function verifyFinalizedNativeSwap(
       tx.receipt?.success !== true ||
       tx.metadata?.status !== "finalized" ||
       !Number.isSafeInteger(tx.metadata?.entry_height) ||
+      tx.metadata.entry_height < 0 || tx.metadata.entry_height > independentlyRootedHeight ||
       tx.metadata.entry_height < intent.quoteAtHeight ||
       tx.metadata.entry_height > intent.deadlineHeight ||
       tx.tx?.signer !== intent.signer ||
