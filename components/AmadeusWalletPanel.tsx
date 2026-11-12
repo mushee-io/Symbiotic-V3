@@ -129,7 +129,13 @@ export function AmadeusWalletPanel({ rpcHealthy }: { rpcHealthy: boolean }) {
         ) {
           throw new Error("No verified AMA balance");
         }
-        const parsed = data as BalanceResult;
+        const parsed: BalanceResult = {
+          amount: data.amount,
+          address: account,
+          checkedAt: "checkedAt" in data && typeof data.checkedAt === "string"
+            ? data.checkedAt
+            : "",
+        };
         setBalance(parsed);
         setBalanceStatus("ready");
       })
