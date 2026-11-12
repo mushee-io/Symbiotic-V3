@@ -77,3 +77,7 @@ See the [12 detailed milestones](docs/roadmap.md) and [M1–M12 GitHub tracking 
 
 - [Amadeus node documentation](https://github.com/amadeusprotocol/node/blob/main/DOCS.md)
 - [Amadeus SDK](https://github.com/amadeusprotocol/amadeus-typescript-sdk)
+
+## License
+
+This repository is released under the [MIT License](LICENSE). Copyright © 2026 Mushee Labs. Third-party dependencies retain their respective licenses.
