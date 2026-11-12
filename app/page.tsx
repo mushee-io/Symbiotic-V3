@@ -1,21 +1,25 @@
 "use client";
 import {useEffect,useState} from "react";
 import {MARKETS,COMING_SOON} from "@/lib/markets";
+import { AmadeusWalletPanel } from "@/components/AmadeusWalletPanel";
 
 export default function Home(){
   const [pair,setPair]=useState(0);
   const [status,setStatus]=useState("Checking native testnet...");
+  const [rpcHealthy,setRpcHealthy]=useState(false);
 
   useEffect(()=>{
     let active=true;
     fetch("/api/network",{cache:"no-store"})
       .then(async response=>{
         const data=await response.json();
-        if(active)setStatus(response.ok && data.status==="connected"
-          ? "Amadeus testnet connected · height "+data.height
-          : "Testnet RPC unavailable");
+        if(active) {
+          const healthy = response.ok && data.status === "connected";
+          setRpcHealthy(healthy);
+          setStatus(healthy ? "Amadeus testnet connected · height "+data.height : "Testnet RPC unavailable");
+        }
       })
-      .catch(()=>{if(active)setStatus("Testnet RPC unavailable");});
+      .catch(()=>{if(active){setStatus("Testnet RPC unavailable");setRpcHealthy(false);}});
     return ()=>{active=false;};
   },[]);
 
@@ -30,7 +34,7 @@ export default function Home(){
         <span className="muted">RWA · Soon</span>
         <a href="/roadmap">12 Milestones</a>
       </nav>
-      <button disabled title="Native Amadeus wallet connection is scheduled for M3">Connect AMA Wallet · M3</button>
+      <a className="headerWalletLink" href="#wallet-panel">Connect AMA Wallet</a>
     </header>
     <main className="shell">
       <section className="hero">
@@ -51,7 +55,7 @@ export default function Home(){
             <p>Only independently verified reserves and confirmed swaps will generate displayed prices and trading activity. No simulated market data.</p>
           </div>
         </section>
-        <aside className="panel">
+        <div className="walletColumn"><aside className="panel">
           <h3>Spot swap · AMA quote</h3>
           <div className="swap">
             <p className="muted">Wallet signing and spot execution will be enabled only after verified Amadeus testnet pool deployment.</p>
@@ -63,6 +67,8 @@ export default function Home(){
             <p className="note">Testnet build in progress. No token issuance, native pools, real swaps or AI orders have been verified yet.</p>
           </div>
         </aside>
+        <AmadeusWalletPanel rpcHealthy={rpcHealthy} />
+        </div>
       </div>
       <section className="future">
         <article><strong>AI Trading Agent</strong><p className="muted">Automated liquidity and risk controls (M10).</p><small>COMING SOON</small></article>
