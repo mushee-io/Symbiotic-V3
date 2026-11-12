@@ -3,11 +3,11 @@ import assert from "node:assert/strict";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { readFileSync } from "node:fs";
-import TradePage from "../app/trade/page";
+import TradePage from "../app/trade/onchain/page";
 
 const render = () => renderToStaticMarkup(createElement(TradePage));
 
-test("/trade exchange route starts with AMA trading panels, not a marketing hero", () => {
+test("/trade/onchain exchange route starts with AMA trading panels, not a marketing hero", () => {
   const html=render();
   assert.match(html,/SYMBASIS/);
   assert.match(html,/Spot pairs/);
