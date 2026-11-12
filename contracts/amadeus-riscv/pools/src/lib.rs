@@ -4,6 +4,7 @@
 
 pub const MAX_RESERVE: u128 = 10_000_000_000_000_000;
 pub const KEY_BYTES: usize = 48;
+pub mod security;
 
 #[cfg(target_arch = "riscv64")]
 #[inline(always)]
@@ -145,7 +146,7 @@ pub fn native_coin_transfer(to: &[u8; KEY_BYTES], amount: u128, symbol: &[u8]) {
         table.as_ptr() as u64, 0, 0,
         out.as_mut_ptr() as u64, out.len() as u64, 0, 0
     ]);
-    if n != 2 || &out[..2] != b"ok" { abort(b"native_transfer_failed"); }
+    if !security::transfer_ack(n, &out[..2]) { abort(b"native_transfer_failed"); }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
@@ -245,7 +246,7 @@ pub fn enforce_deadline(deadline: u128) {
     }
 }
 pub fn unlocked() {
-    if kv_exists(b"guard") { abort(b"reentrant_call"); }
+    if !security::no_reentrancy(kv_exists(b"guard")) { abort(b"reentrant_call"); }
 }
 pub fn lock() { unlocked(); kv_put(b"guard", b"1"); }
 pub fn unlock() { kv_delete(b"guard"); }
