@@ -1,83 +1,155 @@
 "use client";
-import {useEffect,useState} from "react";
-import {MARKETS,COMING_SOON} from "@/lib/markets";
+import * as React from "react";
+
+import { useEffect, useState } from "react";
+import { MARKETS, COMING_SOON } from "@/lib/markets";
 import { AmadeusWalletPanel } from "@/components/AmadeusWalletPanel";
 import { MarketTerminal } from "@/components/MarketTerminal";
 import { AgentMonitorPanel } from "@/components/AgentMonitorPanel";
 
-export default function Home(){
-  const [pair,setPair]=useState(0);
-  const [status,setStatus]=useState("Checking native testnet...");
-  const [rpcHealthy,setRpcHealthy]=useState(false);
-  const [walletAccount,setWalletAccount]=useState<string|null>(null);
+/**
+ * Exchange-first read-only testnet surface. All market statistics come from
+ * native verified chain reads inside MarketTerminal; never insert demo prices.
+ */
+export default function Home() {
+  const [pair, setPair] = useState(0);
+  const [status, setStatus] = useState("Checking native Amadeus RPC…");
+  const [rpcHealthy, setRpcHealthy] = useState(false);
+  const [walletAccount, setWalletAccount] = useState<string | null>(null);
+  const [walletOpen, setWalletOpen] = useState(false);
+  const [walletEverOpened, setWalletEverOpened] = useState(false);
+  const openWallet = () => { setWalletEverOpened(true); setWalletOpen(true); };
+  const [riskOpen, setRiskOpen] = useState(false);
+  const market = MARKETS[pair];
 
-  useEffect(()=>{
-    let active=true;
-    fetch("/api/network",{cache:"no-store"})
-      .then(async response=>{
-        const data=await response.json();
-        if(active) {
-          const healthy = response.ok && data.status === "connected";
-          setRpcHealthy(healthy);
-          setStatus(healthy ? "Amadeus testnet connected · height "+data.height : "Testnet RPC unavailable");
+  useEffect(() => {
+    let active = true;
+    const controller = new AbortController();
+    void fetch("/api/network", { cache: "no-store", signal: controller.signal })
+      .then(async (response) => {
+        const data: unknown = await response.json();
+        if (!active) return;
+        if (!response.ok || !data || typeof data !== "object" ||
+            !("status" in data) || data.status !== "connected" ||
+            !("height" in data) || typeof data.height !== "number" ||
+            !Number.isSafeInteger(data.height)) {
+          throw Error("unverified_rpc");
         }
+        setRpcHealthy(true);
+        setStatus("RPC connected · block " + data.height.toLocaleString("en-US"));
       })
-      .catch(()=>{if(active){setStatus("Testnet RPC unavailable");setRpcHealthy(false);}});
-    return ()=>{active=false;};
-  },[]);
+      .catch(() => {
+        if (active) {
+          setStatus("Native testnet RPC unavailable");
+          setRpcHealthy(false);
+        }
+      });
+    return () => { active = false; controller.abort(); };
+  }, []);
 
-  const market=MARKETS[pair];
-  return <>
-    <header className="header">
-      <a className="logo" href="/">SYMBIOTIC <b>V3</b></a>
-      <nav className="links">
-        <a className="accent" href="/">Spot</a>
-        <a href="#m10-agent">AI risk research</a>
-        <a href="/demo">Public evidence</a>
-        <span className="muted">Perpetuals · Soon</span>
-        <span className="muted">RWA · Soon</span>
-        <a href="/roadmap">12 Milestones</a>
-      </nav>
-      <a className="headerWalletLink" href="#wallet-panel">Connect AMA Wallet</a>
-    </header>
-    <main className="shell">
-      <section className="hero">
-        <div className="eyebrow">SYMBIOTIC / NATIVE AMADEUS / PUBLIC TESTNET</div>
-        <h1>Trading architecture.<br/><span className="demoAccent">Evidence first.</span></h1>
-        <p>Only TESTBTC/AMA and TESTUSD/AMA. AMA is the sole quote asset. Live minting, liquidity, swaps and autonomous market-making remain disabled until independently verified acceptance.</p>
-        <div className="demoHeroLinks">
-          <a className="demoPrimary" href="/demo">View live readiness ↗</a>
-          <a className="demoSecondary" href="#m9-terminal">Explore the terminal ↘</a>
+  useEffect(() => {
+    if (!walletOpen) return;
+    const close = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setWalletOpen(false);
+    };
+    window.addEventListener("keydown", close);
+    return () => window.removeEventListener("keydown", close);
+  }, [walletOpen]);
+
+  return (
+    <div className="exApp">
+      <header className="exHeader">
+        <div className="exHeaderLeft">
+          <a className="exBrand" href="/" aria-label="Symbiotic V3 Spot">
+            <span className="exBrandMark" aria-hidden="true">S</span>
+            <span>SYMBIOTIC <b>V3</b></span>
+          </a>
+          <span className="exHeaderDivider" aria-hidden="true"/>
+          <nav className="exNav" aria-label="Primary">
+            <a className="exNavActive" href="#m9-terminal">Trade</a>
+            <a href="#market-watchlist">Markets</a>
+            <a href="#exchange-activity">Activity</a>
+            <a href="#ai-research">AI Risk</a>
+            <a href="/demo">Evidence</a>
+            <a href="/roadmap">Roadmap</a>
+          </nav>
         </div>
-        <p className="demoHeroDisclaimer">RESEARCH PREVIEW · NO LIVE SWAPS · NO SYNTHETIC ACTIVITY</p>
-      </section>
-      <div className="status" role="status">{status}. Connectivity is not evidence of deployed pools or live trading.</div>
-      <div className="main">
-        <div className="terminalColumn">
-          <section className="panel terminalMarketSwitch" aria-label="Select AMA spot market">
-            <h3>Spot markets · AMA quote only</h3>
-            <div className="pairs">{MARKETS.map((item,index)=>
-              <button type="button" aria-pressed={index===pair}
-                className={index===pair?"selected":""} onClick={()=>setPair(index)} key={item.id}>
-                {item.label}
-              </button>
-            )}</div>
-          </section>
-          <MarketTerminal base={market.base} account={walletAccount} rpcHealthy={rpcHealthy} />
+        <div className="exHeaderRight">
+          <span className="exChainPill"><span className={rpcHealthy ? "exLed" : "exLed exLedOff"}/>
+            AMA Testnet
+          </span>
+          <button type="button" className="exHeaderWallet" onClick={openWallet}>
+            {walletAccount ? walletAccount.slice(0, 7) + "…" + walletAccount.slice(-5) : "Connect Wallet"}
+          </button>
         </div>
-        <div className="walletColumn">
-          <AmadeusWalletPanel rpcHealthy={rpcHealthy} onAccountChange={setWalletAccount} />
-        </div>
+      </header>
+
+      <div className="exNetworkBar" role="status">
+        <span className="exNetworkStatus">
+          <span className={rpcHealthy ? "exLed" : "exLed exLedOff"} aria-hidden="true"/>
+          {status}
+        </span>
+        <span>AMA quoted markets only</span>
+        <span className="exNetworkWarning">Public testnet · Read-only · No live orders</span>
+        <a href="https://testnet.explorer.ama.one" target="_blank" rel="noopener noreferrer">Explorer ↗</a>
       </div>
-      <AgentMonitorPanel base={market.base} account={walletAccount} rpcHealthy={rpcHealthy} />
-      <section className="future">
-        <article><strong>AI Market Maker</strong><p className="muted">M10 read-only guardrails and audit preview are available above. Live execution is locked.</p><small>RESEARCH ONLY</small></article>
-        {COMING_SOON.map(item=><article key={item}><strong>{item}</strong><p className="muted">Future market; not active.</p><small>COMING SOON</small></article>)}
+
+      <main className="exWorkspace" aria-label="AMA native spot trading terminal">
+        <aside className="exWatchlist" id="market-watchlist" aria-label="Spot market list">
+          <div className="exWatchHeader">
+            <div><span className="exMicroLabel">MARKETS</span><h2>Spot pairs</h2></div>
+            <span className="exWatchCount">02</span>
+          </div>
+          <div className="exWatchFilters"><span className="exSelectedFilter">All markets</span><span>AMA pairs</span></div>
+          <div className="exWatchHeadings"><span>Pair</span><span>Last</span></div>
+          <div className="exWatchRows">
+            {MARKETS.map((item, index) => (
+              <button type="button" className={"exWatchRow" + (index === pair ? " exWatchRowSelected" : "")}
+                key={item.id} aria-pressed={index === pair} onClick={() => setPair(index)}>
+                <span className="exTokenAvatar" aria-hidden="true">{item.base === "TESTBTC" ? "TB" : "TU"}</span>
+                <span className="exWatchPair">
+                  <strong>{item.base}<small>/AMA</small></strong>
+                  <span>Native test asset</span>
+                </span>
+                <span className="exWatchQuote">—<small>No verified price</small></span>
+              </button>
+            ))}
+          </div>
+          <div className="exWatchBottom">
+            <span className="exMicroLabel">AMM SPOT</span>
+            <p>Pool prices appear only after verified native contracts hold real reserves.</p>
+            <a href="/demo">Network readiness ↗</a>
+          </div>
+        </aside>
+
+        <MarketTerminal base={market.base} account={walletAccount} rpcHealthy={rpcHealthy}/>
+      </main>
+
+      <section className="exSubfooter" id="ai-research">
+        <button type="button" className="exResearchToggle" aria-expanded={riskOpen}
+          onClick={() => setRiskOpen(current => !current)}>
+          <span><strong>AI Risk Research</strong><small>Deterministic, read-only operator limits and decision audits</small></span>
+          <span>{riskOpen ? "Hide research −" : "Open research +"}</span>
+        </button>
+        {riskOpen && <AgentMonitorPanel base={market.base} account={walletAccount} rpcHealthy={rpcHealthy}/>}
       </section>
-      <p className="muted" style={{fontSize:12}}>
-        Network status is informational, not proof of exchange readiness.{" "}
-        <a href="https://testnet.explorer.ama.one" target="_blank" rel="noopener noreferrer">Amadeus testnet explorer ↗</a>
-      </p>
-    </main>
-  </>;
+      <footer className="exFooter">
+        <span>SYMBIOTIC V3 · AMADEUS TESTNET</span>
+        <span>{COMING_SOON.join("  ·  ")} · Coming soon</span>
+        <a href="/demo">Verification &amp; evidence ↗</a>
+      </footer>
+
+      {walletEverOpened && <div className={"exWalletOverlay" + (walletOpen ? " exWalletOverlayOpen" : "")} aria-hidden={!walletOpen}>
+        <button className="exWalletScrim" type="button" onClick={() => setWalletOpen(false)}
+          aria-label="Close wallet drawer"/>
+        <aside className="exWalletDrawer" aria-label="Amadeus wallet and native testnet operations">
+          <div className="exDrawerHeading">
+            <div><span className="exMicroLabel">NATIVE TESTNET</span><h2>Wallet &amp; assets</h2></div>
+            <button type="button" onClick={() => setWalletOpen(false)} aria-label="Close wallet drawer">✕</button>
+          </div>
+          <AmadeusWalletPanel rpcHealthy={rpcHealthy} onAccountChange={setWalletAccount}/>
+        </aside>
+      </div>}
+    </div>
+  );
 }
