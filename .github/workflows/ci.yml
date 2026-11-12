@@ -24,6 +24,10 @@ jobs:
         run: cargo test --manifest-path contracts/amadeus-riscv/math/Cargo.toml --offline
       - name: Test native pool host ABI helpers (Rust no_std host tests)
         run: cargo test --manifest-path contracts/amadeus-riscv/pools/Cargo.toml --lib --offline
+      - name: Validate public initializer binding and rejection tests
+        run: |
+          rustc --edition=2021 --test contracts/amadeus-riscv/pools/build.rs -o /tmp/symbiotic-pool-build-tests
+          /tmp/symbiotic-pool-build-tests
       - run: npm run build
       - name: Live Amadeus testnet RPC smoke test (nonblocking)
         # A public testnet outage should not mask successful deterministic tests.
