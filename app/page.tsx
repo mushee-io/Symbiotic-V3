@@ -32,7 +32,8 @@ export default function Home(){
       <a className="logo" href="/">SYMBIOTIC <b>V3</b></a>
       <nav className="links">
         <a className="accent" href="/">Spot</a>
-        <span className="muted">AI Agents · Soon</span>
+        <a href="#m10-agent">AI risk research</a>
+        <a href="/demo">Public evidence</a>
         <span className="muted">Perpetuals · Soon</span>
         <span className="muted">RWA · Soon</span>
         <a href="/roadmap">12 Milestones</a>
@@ -41,11 +42,16 @@ export default function Home(){
     </header>
     <main className="shell">
       <section className="hero">
-        <div className="eyebrow">AMA NATIVE · TESTNET · AI SPOT TRADING</div>
-        <h1>AI trading on Amadeus.</h1>
-        <p>Every listed token pairs with AMA. Spot first; autonomous liquidity management and advanced markets are coming soon.</p>
+        <div className="eyebrow">SYMBIOTIC / NATIVE AMADEUS / PUBLIC TESTNET</div>
+        <h1>Trading architecture.<br/><span className="demoAccent">Evidence first.</span></h1>
+        <p>Only TESTBTC/AMA and TESTUSD/AMA. AMA is the sole quote asset. Live minting, liquidity, swaps and autonomous market-making remain disabled until independently verified acceptance.</p>
+        <div className="demoHeroLinks">
+          <a className="demoPrimary" href="/demo">View live readiness ↗</a>
+          <a className="demoSecondary" href="#m9-terminal">Explore the terminal ↘</a>
+        </div>
+        <p className="demoHeroDisclaimer">RESEARCH PREVIEW · NO LIVE SWAPS · NO SYNTHETIC ACTIVITY</p>
       </section>
-      <div className="status" role="status">{status}</div>
+      <div className="status" role="status">{status}. Connectivity is not evidence of deployed pools or live trading.</div>
       <div className="main">
         <div className="terminalColumn">
           <section className="panel terminalMarketSwitch" aria-label="Select AMA spot market">
