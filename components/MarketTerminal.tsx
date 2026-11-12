@@ -1,6 +1,6 @@
 "use client";
 
-import {useCallback,useEffect,useState} from "react";
+import {useCallback,useEffect,useRef,useState} from "react";
 import type {NativeTerminalData} from "@/lib/terminal/read";
 import type {NativeSpotQuote,SpotSide} from "@/lib/spot/quote";
 
@@ -35,12 +35,15 @@ export function MarketTerminal({
   const [quote,setQuote]=useState<NativeSpotQuote|null>(null);
   const [quoteMessage,setQuoteMessage]=useState("");
   const [quoteBusy,setQuoteBusy]=useState(false);
+  const quoteEpoch=useRef(0);
 
   useEffect(()=>{
     let active=true;
     const controller=new AbortController();
     setMarket(null);
+    quoteEpoch.current += 1;
     setQuote(null);
+    setQuoteBusy(false);
     setQuoteMessage("");
     if(!rpcHealthy){
       setStatus("unavailable");
@@ -75,13 +78,14 @@ export function MarketTerminal({
     return ()=>{active=false;controller.abort()};
   },[base,account,rpcHealthy,refreshKey]);
 
-  useEffect(()=>{setQuote(null);setQuoteMessage("");},[base,account,side,amount,slippage]);
+  useEffect(()=>{quoteEpoch.current+=1;setQuote(null);setQuoteBusy(false);setQuoteMessage("");},[base,account,side,amount,slippage]);
 
   const getQuote=useCallback(async()=>{
     setQuote(null);
     setQuoteMessage("");
     if(!market?.pool || !rpcHealthy || quoteBusy)return;
     setQuoteBusy(true);
+    const currentQuoteEpoch=++quoteEpoch.current;
     const query=new URLSearchParams({
       base,side,amount,slippageBps:String(slippage),
     });
@@ -98,11 +102,15 @@ export function MarketTerminal({
       if(!data.quote || data.quote.pair!==base+"/AMA" ||
           data.quote.side!==side || data.quote.amountIn!==amount ||
           data.quote.poolAddress!==market.pool.address)throw Error("quote_mismatch");
-      setQuote(data.quote);
+      if(currentQuoteEpoch===quoteEpoch.current)setQuote(data.quote);
     }catch{
-      setQuote(null);
-      setQuoteMessage("No verified, current reserve-backed quote. Check liquidity and refresh.");
-    }finally{setQuoteBusy(false);}
+      if(currentQuoteEpoch===quoteEpoch.current){
+        setQuote(null);
+        setQuoteMessage("No verified, current reserve-backed quote. Check liquidity and refresh.");
+      }
+    }finally{
+      if(currentQuoteEpoch===quoteEpoch.current)setQuoteBusy(false);
+    }
   },[market,rpcHealthy,quoteBusy,base,side,amount,slippage,account]);
 
   const balance=market?.wallet;
@@ -144,7 +152,7 @@ export function MarketTerminal({
          <div><small>AMA native Coin</small><strong>{balance.amaAtomic} atomic AMA</strong></div>
          <div><small>{base} native Coin</small><strong>{balance.baseAtomic===null?"Not issued / unavailable":balance.baseAtomic+" atomic "+base}</strong></div>
        </div>}
-      {balance&&<p className="terminalInset muted">Chain-reported holdings only; testnet token ownership and any market value are not implied.</p>}
+      {balance&&<p className="terminalInset muted">Chain-reported holdings only; testnet token ownership and any market value are not implied. <a href={"https://testnet.explorer.ama.one/network/address/"+balance.address} target="_blank" rel="noopener noreferrer">View public account in testnet explorer</a></p>}
     </div>
     <div className="terminalQuote">
       <h3>Reserve-backed exact-input quote</h3>
