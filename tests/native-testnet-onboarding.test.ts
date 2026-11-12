@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { createElement } from "react";
+import { readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
 import SetupPage from "../app/setup/page";
 import { TokenIssuancePanel } from "../components/TokenIssuancePanel";
@@ -37,8 +38,10 @@ test("native issuance UI displays testnet domain consent and two unavailable unr
 });
 
 test("home and trading terminal explicitly link to user-run native testnet setup",async()=>{
-  const Home=(await import("../app/page")).default;
+  // The latest branded homepage uses a CSS module, which standalone Node TSX
+  // tests cannot import without Next.js. Check its exact source instead.
+  const home=readFileSync(new URL("../app/page.tsx",import.meta.url),"utf8");
   const Trade=(await import("../app/trade/page")).default;
-  assert.match(renderToStaticMarkup(createElement(Home)),/href="\/setup"/);
+  assert.match(home,/href="\/setup"/);
   assert.match(renderToStaticMarkup(createElement(Trade)),/href="\/setup"/);
 });
