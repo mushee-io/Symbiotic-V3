@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 
-export const metadata:Metadata={
-  title:"Trade | Symbasis",
-  description:"Amadeus-native AMA spot terminal for TESTBTC/AMA and TESTUSD/AMA. Read-only verified market state with wallet-approved test-token setup; spot execution remains unavailable.",
+export const metadata: Metadata = {
+  title: "Interactive AMA Trading Demo | Symbasis",
+  description: "Immediately usable browser-local simulated TESTBTC/AMA and TESTUSD/AMA spot trading and market making. Real native testnet settlement remains separate.",
 };
 
-export default function TradeLayout({children}:{children:React.ReactNode}){
+export default function TradeLayout({children}:{children:React.ReactNode}) {
   return children;
 }

@@ -10,8 +10,8 @@ export const metadata: Metadata = {
 const terminal = "/trade";
 const docs = "https://github.com/mushee-io/Symbiotic-V3#readme";
 const groups = [
-  { title: "Product", links: [["Trade", terminal], ["Markets", "/trade#market-watchlist"], ["Portfolio", "/trade#wallet-panel"], ["Liquidity", "/trade#m7-liquidity"]] },
-  { title: "Systems", links: [["MM Interactive Demo", "/sandbox"], ["Risk", "/trade#ai-research"], ["Private markets", "/roadmap"], ["Testnet rewards", "/demo"]] },
+  { title: "Product", links: [["Trade", terminal], ["Markets", "/trade#market-watchlist"], ["Portfolio", "/trade#demo-balances"], ["Liquidity", "/trade#demo-liquidity"]] },
+  { title: "Systems", links: [["MM Interactive Demo", "/sandbox"], ["Risk", "/trade#demo-mm"], ["Private markets", "/roadmap"], ["Testnet rewards", "/demo"]] },
   { title: "Network", links: [["Explorer ↗", "https://testnet.explorer.ama.one"], ["Faucet ↗", "/setup"], ["Protocol information", "/demo"]] },
   { title: "Resources", links: [["Documentation ↗", docs], ["GitHub ↗", "https://github.com/mushee-io/Symbiotic-V3"], ["Status", "/demo"]] },
 ];
@@ -25,11 +25,11 @@ export default function HomePage() {
     <header className={styles.header}>
       <a href="/" className={styles.brand} aria-label="Symbasis homepage"><Dome small /><span>SYMBASIS</span></a>
       <nav className={styles.nav} aria-label="Main navigation">
-        <a href={terminal}>Trade</a><a href="/trade#market-watchlist">Markets</a><a href="/trade#wallet-panel">Portfolio</a><a href="/trade#m7-liquidity">Liquidity</a><a href="/trade#ai-research">MM</a><a href="/sandbox">MM Demo</a><a href="/demo">Evidence</a>
+        <a href={terminal}>Trade</a><a href="/trade#market-watchlist">Markets</a><a href="/trade#demo-balances">Portfolio</a><a href="/trade#demo-liquidity">Liquidity</a><a href="/trade#demo-mm">MM</a><a href="/sandbox">MM Demo</a><a href="/demo">Evidence</a>
         <details className={styles.more}><summary>More</summary><div><a href={docs}>Documentation ↗</a><a href="/roadmap">Roadmap</a><a href="/demo">Testnet evidence</a><a href="/setup">Testnet setup</a></div></details>
       </nav>
       <a href="/demo" className={styles.network}><i /> <span>Amadeus Protocol testnet</span></a>
-      <a href={terminal} className={styles.headerLaunch}>Launch terminal →</a>
+      <a href={terminal} className={styles.headerLaunch}>Launch trading demo →</a>
     </header>
     <main>
       <section className={styles.hero} aria-label="Symbasis overview">
@@ -37,7 +37,7 @@ export default function HomePage() {
           <div className={styles.eyebrow}><span>▪ &nbsp;01 / Autonomous perpetual infrastructure</span><span>Amadeus Protocol &nbsp;▪</span></div>
           <h1>Private AI<br />perpetual infrastructure<br />for global markets.</h1>
           <p>Symbasis builds autonomous, on-chain market infrastructure powered by AI. Trade perpetuals with institutional-grade execution, private strategy commitments and verifiable testnet settlement.</p>
-          <div className={styles.actions}><a className={styles.launch} href={terminal}>Launch terminal →</a><a className={styles.documentation} href={docs}>Read the documentation ↗</a></div>
+          <div className={styles.actions}><a className={styles.launch} href={terminal}>Launch trading demo →</a><a className={styles.documentation} href={docs}>Read the documentation ↗</a></div>
         </div>
         <aside className={styles.aside} aria-label="Network overview">
           <div className={styles.metrics}>
