@@ -14,7 +14,8 @@ Symbiotic V3 is an Amadeus-native testnet research showcase for exactly **TESTBT
 
 | Route | What it shows | Gate |
 | --- | --- | --- |
-| / | Responsive research landing page and two-market terminal | Swaps and signing disabled |
+| / | Dedicated public homepage, two AMA spot market previews and route navigation | No live market activity claimed |
+| /trade | Read-only native AMM spot terminal, wallet drawer, BUY/SELL research ticket and on-chain activity | Signing and swaps disabled |
 | /demo | Read-only testnet evidence dashboard and readiness matrix | Only server-observed native state |
 | /api/demo/readiness | No-store chain observations, blockers and reproducible SHA-256 digest | No query-supplied RPC, pool, wallet, receipts or approvals |
 | /api/network | Actual testnet tip and rooted stats, connectivity only | Never implies exchange ready |
@@ -29,7 +30,7 @@ Official explorer: https://testnet.explorer.ama.one. Only link on-chain receipts
 1. Open /demo and click Refresh on-chain evidence. Confirm the network and record the observed tip/rooted block heights and time. If RPC fails, use the unavailable error state, not a mock result.
 2. Inspect both market cards. Record native Coin registry status, with clear distinction between a registered symbol and a verified M4 issuer mint. Absent pools, prices, balances or transaction history stay explicitly unverified.
 3. Inspect the live acceptance matrix. Signed trade execution remains disabled while M3–M11 independent prerequisites are outstanding; a successful CI run or SDK connection cannot override it.
-4. Open / and switch between the exact TESTBTC/AMA and TESTUSD/AMA markets. The terminal has honest empty histories and no synthetic chart candles or volumes when underlying data is missing.
+4. Open /trade and switch between the exact TESTBTC/AMA and TESTUSD/AMA markets. The terminal has honest empty histories and no synthetic chart candles or volumes when underlying data is missing.
 5. Inspect M10 risk research. Local preview pause/kill controls do not enable a transaction. Its SHA-256 digest describes a reproducible decision, not a trade hash or persistent database audit.
 6. Independently inspect [GitHub Actions](https://github.com/mushee-io/Symbiotic-V3/actions), [GitHub issues](https://github.com/mushee-io/Symbiotic-V3/issues) and the Amadeus explorer before presenting proof to users or grant reviewers.
 7. Independently verify web hosting. A passing Next.js build and green CI do NOT prove a public READY Vercel deployment; an owned deployment ID, exact commit SHA, public hostname and successful HTTPS response are required.
@@ -38,7 +39,7 @@ Official explorer: https://testnet.explorer.ama.one. Only link on-chain receipts
 
 - [ ] Vercel project linked to mushee-io/Symbiotic-V3 in the correct authenticated team.
 - [ ] Public production deployment READY with GitHub commit SHA matching intended main release.
-- [ ] Public domain, successful response and functioning /, /demo and /api/demo/readiness on pinned Amadeus testnet.
+- [ ] Public domain, successful response and functioning /, /trade, /demo and /api/demo/readiness on pinned Amadeus testnet.
 - [ ] Network-origin and no-mainnet-fallback checked on actual deployed runtime.
 - [ ] Capture deployment ID, URL, commit, response status, verification date and evidence hashes. Never invent these values.
 - [ ] Public screenshots and a non-sensitive demo video are taken from the real published site, not mock rendering.

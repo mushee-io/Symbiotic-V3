@@ -10,6 +10,12 @@
 - **Future markets:** Perpetuals, RWA, Notional and Options are **Coming Soon** and cannot execute orders.
 - **Smart contracts:** native Amadeus RISC-V ELF contract integration; this project does not use an imported foreign-chain execution environment.
 
+## Homepage and native spot terminal
+
+- **Homepage:** `/` is a distinct public landing page with AMA-only market previews, protocol features and clear launch links. No fabricated prices or trade activity.
+- **Trading app:** `/trade` hosts the complete existing exchange-first market watchlist, chart empty state, BUY/SELL read-only ticket, native wallet drawer and verified on-chain activity. Trading remains blocked until the independent live acceptance gates are satisfied.
+- **Evidence:** `/demo` remains a dedicated testnet readiness dashboard.
+
 ## Public demo and evidence
 
 - Read-only research dashboard: [public testnet demo](/demo) (route available only where the app is actually deployed).

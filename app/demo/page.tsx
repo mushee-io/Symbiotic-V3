@@ -11,7 +11,7 @@ export default function PublicDemo(){
     <header className="header">
       <a className="logo" href="/">SYMBIOTIC <b>V3</b></a>
       <nav className="links" aria-label="Demo navigation">
-        <a href="/">Spot terminal</a>
+        <a href="/trade">Trading terminal</a>
         <a className="accent" href="/demo">Public evidence</a>
         <a href="/roadmap">12 milestones</a>
       </nav>
@@ -24,7 +24,7 @@ export default function PublicDemo(){
         <p>Our AMA-native spot trading research is open to inspect. These are public testnet observations and code milestones—not a claim that swaps are live.</p>
         <div className="demoHeroLinks">
           <a className="demoPrimary" href="#demo-readiness">Check readiness ↘</a>
-          <a className="demoSecondary" href="/">Explore read-only spot ↗</a>
+          <a className="demoSecondary" href="/trade">Explore read-only spot ↗</a>
         </div>
       </section>
       <DemoReadinessPanel/>

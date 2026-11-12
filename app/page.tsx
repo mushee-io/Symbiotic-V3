@@ -1,155 +1,115 @@
-"use client";
 import * as React from "react";
+import type { Metadata } from "next";
 
-import { useEffect, useState } from "react";
-import { MARKETS, COMING_SOON } from "@/lib/markets";
-import { AmadeusWalletPanel } from "@/components/AmadeusWalletPanel";
-import { MarketTerminal } from "@/components/MarketTerminal";
-import { AgentMonitorPanel } from "@/components/AgentMonitorPanel";
+export const metadata:Metadata={
+  title:"Symbiotic V3 | AMA-Native Spot Markets",
+  description:"Explore Symbiotic V3: two AMA-quoted spot market designs, native Amadeus RISC-V AMM architecture, honest public-testnet evidence, and a read-only trading terminal.",
+};
 
-/**
- * Exchange-first read-only testnet surface. All market statistics come from
- * native verified chain reads inside MarketTerminal; never insert demo prices.
- */
-export default function Home() {
-  const [pair, setPair] = useState(0);
-  const [status, setStatus] = useState("Checking native Amadeus RPC…");
-  const [rpcHealthy, setRpcHealthy] = useState(false);
-  const [walletAccount, setWalletAccount] = useState<string | null>(null);
-  const [walletOpen, setWalletOpen] = useState(false);
-  const [walletEverOpened, setWalletEverOpened] = useState(false);
-  const openWallet = () => { setWalletEverOpened(true); setWalletOpen(true); };
-  const [riskOpen, setRiskOpen] = useState(false);
-  const market = MARKETS[pair];
+const markets=[
+  {base:"TESTBTC",avatar:"B",kind:"Experimental base asset",index:"01"},
+  {base:"TESTUSD",avatar:"U",kind:"Experimental base asset",index:"02"},
+] as const;
 
-  useEffect(() => {
-    let active = true;
-    const controller = new AbortController();
-    void fetch("/api/network", { cache: "no-store", signal: controller.signal })
-      .then(async (response) => {
-        const data: unknown = await response.json();
-        if (!active) return;
-        if (!response.ok || !data || typeof data !== "object" ||
-            !("status" in data) || data.status !== "connected" ||
-            !("height" in data) || typeof data.height !== "number" ||
-            !Number.isSafeInteger(data.height)) {
-          throw Error("unverified_rpc");
-        }
-        setRpcHealthy(true);
-        setStatus("RPC connected · block " + data.height.toLocaleString("en-US"));
-      })
-      .catch(() => {
-        if (active) {
-          setStatus("Native testnet RPC unavailable");
-          setRpcHealthy(false);
-        }
-      });
-    return () => { active = false; controller.abort(); };
-  }, []);
+const capabilities=[
+  {number:"01",name:"Spot trading",tag:"READ-ONLY DEMO",summary:"An AMA-native terminal with exact-input AMM quotes, pool accounting, and finalized transaction views only where verifiable chain data exists.",href:"/trade",link:"Explore terminal"},
+  {number:"02",name:"Liquidity architecture",tag:"LIVE ACCEPTANCE PENDING",summary:"Native RISC-V pool contracts, reserve conservation and LP share accounting. Production-like interaction waits for deployed contracts and funded pools.",href:"/demo",link:"View pool readiness"},
+  {number:"03",name:"AI risk research",tag:"NON-EXECUTING",summary:"Deterministic inventory, spread and loss-limit analysis with readable decisions. No autonomous trading, fabricated market making or signing.",href:"/trade#ai-research",link:"Explore risk controls"},
+] as const;
 
-  useEffect(() => {
-    if (!walletOpen) return;
-    const close = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setWalletOpen(false);
-    };
-    window.addEventListener("keydown", close);
-    return () => window.removeEventListener("keydown", close);
-  }, [walletOpen]);
+export default function HomePage(){
+  return <div className="hmSite">
+    <header className="hmHeader">
+      <a href="/" className="hmBrand" aria-label="Symbiotic V3 homepage">
+        <span className="hmBrandIcon" aria-hidden="true">S</span>
+        <span>SYMBIOTIC <b>V3</b></span>
+      </a>
+      <nav className="hmNav" aria-label="Main navigation">
+        <a className="hmNavCurrent" href="/" aria-current="page">Home</a>
+        <a href="/trade">Trade</a>
+        <a href="#markets">Markets</a>
+        <a href="#liquidity">Liquidity</a>
+        <a href="#ai-risk">AI Risk</a>
+        <a href="/demo">Evidence</a>
+      </nav>
+      <a href="/trade" className="hmNavAction">Launch App <span aria-hidden="true">↗</span></a>
+    </header>
 
-  return (
-    <div className="exApp">
-      <header className="exHeader">
-        <div className="exHeaderLeft">
-          <a className="exBrand" href="/" aria-label="Symbiotic V3 Spot">
-            <span className="exBrandMark" aria-hidden="true">S</span>
-            <span>SYMBIOTIC <b>V3</b></span>
-          </a>
-          <span className="exHeaderDivider" aria-hidden="true"/>
-          <nav className="exNav" aria-label="Primary">
-            <a className="exNavActive" href="#m9-terminal">Trade</a>
-            <a href="#market-watchlist">Markets</a>
-            <a href="#exchange-activity">Activity</a>
-            <a href="#ai-research">AI Risk</a>
-            <a href="/demo">Evidence</a>
-            <a href="/roadmap">Roadmap</a>
-          </nav>
+    <main>
+      <section className="hmHero" aria-label="Symbiotic V3 overview">
+        <div className="hmHeroInner">
+          <div className="hmHeroCopy">
+            <div className="hmKicker"><span className="hmBeacon" aria-hidden="true"/> AMADEUS NATIVE / PUBLIC TESTNET</div>
+            <h1>SPOT.<br/><span>WITHOUT</span><br/>COMPROMISE.</h1>
+            <p>A purpose-built spot exchange architecture on Amadeus. Two test markets. One native quote asset: AMA. Open engineering, verifiable data, and a terminal designed for trading.</p>
+            <div className="hmHeroActions">
+              <a href="/trade" className="hmButtonPrimary">Explore Trading Terminal <span aria-hidden="true">↗</span></a>
+              <a href="/demo" className="hmButtonSecondary">View Testnet Evidence <span aria-hidden="true">↗</span></a>
+            </div>
+            <div className="hmHeroCaveat"><span className="hmCaveatDot" aria-hidden="true"/> Research preview · Live mints, funded pools and swaps not yet verified</div>
+          </div>
+          <div className="hmPreview" aria-label="Two AMA market overview without simulated prices or activity">
+            <div className="hmPreviewTop"><span>SYMBIOTIC / MARKET OVERVIEW</span><span className="hmPreviewTag">TESTNET ONLY</span></div>
+            <div className="hmPreviewHero">
+              <span className="hmMicroLabel">THE NATIVE SPOT EXPERIENCE</span>
+              <strong>Two markets.<br/><span>One settlement asset.</span></strong>
+              <div className="hmPreviewQuote">AMA <span>ONLY</span></div>
+            </div>
+            <div className="hmPreviewHead"><span>MARKET</span><span>LAST PRICE</span><span>STATUS</span></div>
+            {markets.map(m=><div className="hmPreviewRow" key={m.base}>
+              <span className="hmPreviewMarket"><span className="hmAvatar">{m.avatar}</span><span><b>{m.base}<i>/AMA</i></b><small>{m.kind}</small></span></span>
+              <span className="hmPreviewPrice">— <small>Unavailable</small></span>
+              <span className="hmPreviewPending">Not live</span>
+            </div>)}
+            <div className="hmPreviewBottom">
+              <span>AMM · NATIVE RISC-V</span>
+              <a href="/trade">OPEN TERMINAL <span aria-hidden="true">↗</span></a>
+            </div>
+          </div>
         </div>
-        <div className="exHeaderRight">
-          <span className="exChainPill"><span className={rpcHealthy ? "exLed" : "exLed exLedOff"}/>
-            AMA Testnet
-          </span>
-          <button type="button" className="exHeaderWallet" onClick={openWallet}>
-            {walletAccount ? walletAccount.slice(0, 7) + "…" + walletAccount.slice(-5) : "Connect Wallet"}
-          </button>
+        <div className="hmHeroIndex" aria-hidden="true">
+          <span>01 / NATIVE SPOT</span><span>02 / AMA LIQUIDITY</span><span>03 / RISK RESEARCH</span>
         </div>
-      </header>
-
-      <div className="exNetworkBar" role="status">
-        <span className="exNetworkStatus">
-          <span className={rpcHealthy ? "exLed" : "exLed exLedOff"} aria-hidden="true"/>
-          {status}
-        </span>
-        <span>AMA quoted markets only</span>
-        <span className="exNetworkWarning">Public testnet · Read-only · No live orders</span>
-        <a href="https://testnet.explorer.ama.one" target="_blank" rel="noopener noreferrer">Explorer ↗</a>
-      </div>
-
-      <main className="exWorkspace" aria-label="AMA native spot trading terminal">
-        <aside className="exWatchlist" id="market-watchlist" aria-label="Spot market list">
-          <div className="exWatchHeader">
-            <div><span className="exMicroLabel">MARKETS</span><h2>Spot pairs</h2></div>
-            <span className="exWatchCount">02</span>
-          </div>
-          <div className="exWatchFilters"><span className="exSelectedFilter">All markets</span><span>AMA pairs</span></div>
-          <div className="exWatchHeadings"><span>Pair</span><span>Last</span></div>
-          <div className="exWatchRows">
-            {MARKETS.map((item, index) => (
-              <button type="button" className={"exWatchRow" + (index === pair ? " exWatchRowSelected" : "")}
-                key={item.id} aria-pressed={index === pair} onClick={() => setPair(index)}>
-                <span className="exTokenAvatar" aria-hidden="true">{item.base === "TESTBTC" ? "TB" : "TU"}</span>
-                <span className="exWatchPair">
-                  <strong>{item.base}<small>/AMA</small></strong>
-                  <span>Native test asset</span>
-                </span>
-                <span className="exWatchQuote">—<small>No verified price</small></span>
-              </button>
-            ))}
-          </div>
-          <div className="exWatchBottom">
-            <span className="exMicroLabel">AMM SPOT</span>
-            <p>Pool prices appear only after verified native contracts hold real reserves.</p>
-            <a href="/demo">Network readiness ↗</a>
-          </div>
-        </aside>
-
-        <MarketTerminal base={market.base} account={walletAccount} rpcHealthy={rpcHealthy}/>
-      </main>
-
-      <section className="exSubfooter" id="ai-research">
-        <button type="button" className="exResearchToggle" aria-expanded={riskOpen}
-          onClick={() => setRiskOpen(current => !current)}>
-          <span><strong>AI Risk Research</strong><small>Deterministic, read-only operator limits and decision audits</small></span>
-          <span>{riskOpen ? "Hide research −" : "Open research +"}</span>
-        </button>
-        {riskOpen && <AgentMonitorPanel base={market.base} account={walletAccount} rpcHealthy={rpcHealthy}/>}
       </section>
-      <footer className="exFooter">
-        <span>SYMBIOTIC V3 · AMADEUS TESTNET</span>
-        <span>{COMING_SOON.join("  ·  ")} · Coming soon</span>
-        <a href="/demo">Verification &amp; evidence ↗</a>
-      </footer>
 
-      {walletEverOpened && <div className={"exWalletOverlay" + (walletOpen ? " exWalletOverlayOpen" : "")} aria-hidden={!walletOpen}>
-        <button className="exWalletScrim" type="button" onClick={() => setWalletOpen(false)}
-          aria-label="Close wallet drawer"/>
-        <aside className="exWalletDrawer" aria-label="Amadeus wallet and native testnet operations">
-          <div className="exDrawerHeading">
-            <div><span className="exMicroLabel">NATIVE TESTNET</span><h2>Wallet &amp; assets</h2></div>
-            <button type="button" onClick={() => setWalletOpen(false)} aria-label="Close wallet drawer">✕</button>
-          </div>
-          <AmadeusWalletPanel rpcHealthy={rpcHealthy} onAccountChange={setWalletAccount}/>
-        </aside>
-      </div>}
-    </div>
-  );
+      <section className="hmSection hmMarkets" id="markets">
+        <div className="hmSectionTop"><div><span className="hmMicroLabel">01 — MARKET UNIVERSE</span><h2>Only the markets<br/><span>we can verify.</span></h2></div>
+          <p>No imaginary order books or manufactured trading volume. Market prices and charts will be shown only after real AMM deployments, reserves and finalized history are independently verified.</p></div>
+        <div className="hmMarketCards">
+          {markets.map(m=><a className="hmMarketCard" href="/trade" key={m.base} aria-label={"Explore "+m.base+"/AMA terminal"}>
+            <div className="hmMarketCardHead"><span>MARKET {m.index}</span><span>AMA QUOTE ONLY</span></div>
+            <div className="hmMarketCardPair"><span className="hmLargeAvatar">{m.avatar}</span><strong>{m.base}<i>/AMA</i></strong></div>
+            <div className="hmMarketCardMeta"><span>Verified market price</span><strong>—</strong></div>
+            <div className="hmMarketCardFoot"><span>Trading awaits finalized native testnet acceptance</span><span aria-hidden="true">↗</span></div>
+          </a>)}
+        </div>
+      </section>
+
+      <section className="hmSection hmCapabilities" id="liquidity">
+        <div className="hmSectionTop"><div><span className="hmMicroLabel">02 — BUILDING BLOCKS</span><h2>Built for an<br/><span>on-chain market.</span></h2></div>
+          <p>Spot execution, liquidity and automated risk analysis have distinct safety and verification boundaries. Source completion is not the same as financial readiness.</p></div>
+        <div className="hmCapabilityGrid">
+          {capabilities.map(c=><article key={c.number} className="hmCapabilityCard" id={c.number==="03"?"ai-risk":undefined}>
+            <div className="hmCapabilityHeader"><span>{c.number} / PROTOCOL</span><span className="hmCapabilityTag">{c.tag}</span></div>
+            <h3>{c.name}</h3><p>{c.summary}</p>
+            <a href={c.href}>{c.link} <span aria-hidden="true">↗</span></a>
+          </article>)}
+        </div>
+      </section>
+
+      <section className="hmEvidence" id="resources">
+        <div><span className="hmMicroLabel">03 — TRUST THROUGH EVIDENCE</span><h2>Don't take the interface's<br/>word for it.</h2><p>Inspect independent native-chain observations, the open issues and the security evidence. Missing receipts are disclosed, not invented.</p></div>
+        <div className="hmEvidenceActions">
+          <a href="/demo">Read public testnet evidence <span aria-hidden="true">↗</span></a>
+          <a href="/roadmap">Explore 12 milestones <span aria-hidden="true">↗</span></a>
+          <a href="https://github.com/mushee-io/Symbiotic-V3" target="_blank" rel="noopener noreferrer">View GitHub repository <span aria-hidden="true">↗</span></a>
+        </div>
+      </section>
+    </main>
+    <footer className="hmFooter">
+      <div className="hmFooterBrand"><span className="hmBrandIcon" aria-hidden="true">S</span><strong>SYMBIOTIC V3</strong></div>
+      <span>Native Amadeus testnet · AMA-quoted research · No live trades</span>
+      <div><a href="/trade">Trade</a><a href="/demo">Evidence</a><a href="/roadmap">Roadmap</a></div>
+    </footer>
+  </div>;
 }
