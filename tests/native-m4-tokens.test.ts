@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { AmadeusSDK } from "@amadeus-protocol/sdk";
+import { AmadeusSDK, toBase58 } from "@amadeus-protocol/sdk";
 import {
   M4_TEST_TOKENS, TokenIssuanceError, buildNativeMintCall,
   requireM4Symbol, validateTokenDefinition, parseTotalSupply,
@@ -11,8 +11,8 @@ import {
 } from "../lib/amadeus-token-issuance";
 import type { AmadeusWalletProvider } from "../lib/amadeus-wallet";
 
-const OWNER = "2".repeat(65);
-const HASH = "3".repeat(65);
+const OWNER = toBase58(new Uint8Array(48).fill(2));
+const HASH = toBase58(new Uint8Array(32).fill(3));
 const AMOUNT = "1000000000000000";
 
 test("M4 is exactly two unique test assets quoted only in AMA", () => {
@@ -124,17 +124,25 @@ function fakeSdk(existing = false, outcomeSuccess = true, registeredCorrectly = 
   };
 }
 
-test("approved native testnet mint confirms signed hash, finality, supply and issuer holdings", async () => {
+test("M11: independent M3 attestation blocks an otherwise valid native mint before wallet signing", async () => {
   const fixture = fakeSdk();
-  const proof = await issueNativeTestToken({
+  await assert.rejects(issueNativeTestToken({
     sdk: fixture.sdk, provider: fixture.provider, account: OWNER,
     network: "testnet", rpcHealthy: true,
-  }, "TESTBTC");
-  assert.equal(proof.status, "finalized");
-  assert.equal(proof.hash, HASH);
-  assert.equal(proof.pair, "TESTBTC/AMA");
-  assert.equal(proof.supplyAtomic, AMOUNT);
-  assert.deepEqual(fixture.calls(), { submitted: 1, signed: 1 });
+  }, "TESTBTC"), (err: unknown) =>
+    err instanceof TokenIssuanceError && err.code === "m3_two_wallet_signing_domain_unverified");
+  assert.deepEqual(fixture.calls(), { submitted: 0, signed: 0 });
+});
+
+test("finalized native mint proof verifier remains independently testable WITHOUT broadcasting", async () => {
+  const fixture = fakeSdk(true);
+  const evidence={hash:HASH,metadata:{entry_height:101,status:"finalized"},receipt:{success:true}};
+  const proof=await verifyNativeMint(fixture.sdk,"TESTBTC",OWNER,HASH,evidence);
+  assert.equal(proof.status,"finalized");
+  assert.equal(proof.hash,HASH);
+  assert.equal(proof.pair,"TESTBTC/AMA");
+  assert.equal(proof.supplyAtomic,AMOUNT);
+  assert.deepEqual(fixture.calls(), { submitted: 0, signed: 0 });
 });
 
 test("existing global symbol is never signed or reissued", async () => {
@@ -161,7 +169,7 @@ test("a reverted execution receipt is not a successful mint", async () => {
     sdk: fixture.sdk, provider: fixture.provider, account: OWNER,
     network: "testnet", rpcHealthy: true,
   }, "TESTBTC"), TokenIssuanceError);
-  assert.deepEqual(fixture.calls(), { submitted: 1, signed: 1 });
+  assert.deepEqual(fixture.calls(), { submitted: 0, signed: 0 });
 });
 
 test("mint cannot be declared verified if supply differs on chain", async () => {
