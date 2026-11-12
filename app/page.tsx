@@ -17,6 +17,8 @@ export default function Home() {
   const [rpcHealthy, setRpcHealthy] = useState(false);
   const [walletAccount, setWalletAccount] = useState<string | null>(null);
   const [walletOpen, setWalletOpen] = useState(false);
+  const [walletEverOpened, setWalletEverOpened] = useState(false);
+  const openWallet = () => { setWalletEverOpened(true); setWalletOpen(true); };
   const [riskOpen, setRiskOpen] = useState(false);
   const market = MARKETS[pair];
 
@@ -76,7 +78,7 @@ export default function Home() {
           <span className="exChainPill"><span className={rpcHealthy ? "exLed" : "exLed exLedOff"}/>
             AMA Testnet
           </span>
-          <button type="button" className="exHeaderWallet" onClick={() => setWalletOpen(true)}>
+          <button type="button" className="exHeaderWallet" onClick={openWallet}>
             {walletAccount ? walletAccount.slice(0, 7) + "…" + walletAccount.slice(-5) : "Connect Wallet"}
           </button>
         </div>
@@ -137,7 +139,7 @@ export default function Home() {
         <a href="/demo">Verification &amp; evidence ↗</a>
       </footer>
 
-      {walletOpen && <div className="exWalletOverlay">
+      {walletEverOpened && <div className={"exWalletOverlay" + (walletOpen ? " exWalletOverlayOpen" : "")} aria-hidden={!walletOpen}>
         <button className="exWalletScrim" type="button" onClick={() => setWalletOpen(false)}
           aria-label="Close wallet drawer"/>
         <aside className="exWalletDrawer" aria-label="Amadeus wallet and native testnet operations">
