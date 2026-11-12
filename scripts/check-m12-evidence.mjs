@@ -30,7 +30,8 @@ const wallet=inputs["lib/amadeus-wallet.ts"];
 const doc=inputs["docs/m12-public-testnet-demo.md"];
 const grant=inputs["docs/m12-amadeus-ecosystem-proposal.md"];
 const checks={
-  separateHomepageAndSpotTerminal: landing.includes('href="/trade"') &&
+  separateHomepageAndSpotTerminal: (landing.includes('href="/trade"') ||
+    (landing.includes('const terminal = "/trade"') && landing.includes("href={terminal}"))) &&
     landing.includes("HomePage") && trade.includes("MarketTerminal") &&
     trade.includes("AmadeusWalletPanel") && trade.includes("href=\"/\""),
   exactlyTwoAmaQuotedMarkets:markets.includes('["TESTBTC","TESTUSD"]') &&

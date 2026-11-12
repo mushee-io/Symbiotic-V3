@@ -72,6 +72,7 @@ export default function TradePage() {
             <a href="#exchange-activity">Activity</a>
             <a href="#ai-research">AI Risk</a>
             <a href="/demo">Evidence</a>
+            <a href="/setup">Testnet Setup</a>
             <a href="/roadmap">Roadmap</a>
           </nav>
         </div>

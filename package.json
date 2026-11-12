@@ -14,6 +14,8 @@
   },
   "dependencies": {
     "@amadeus-protocol/sdk": "^1.8.0",
+    "@noble/curves": "^1.9.1",
+    "@noble/hashes": "^1.8.0",
     "next": "16.4.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"

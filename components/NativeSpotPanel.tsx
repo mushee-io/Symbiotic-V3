@@ -1,4 +1,5 @@
 "use client";
+import * as React from "react";
 
 import { useCallback, useEffect, useState } from "react";
 import type { AmadeusWalletProvider, WalletNetworkState } from "@/lib/amadeus-wallet";

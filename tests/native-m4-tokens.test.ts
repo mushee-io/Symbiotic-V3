@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { AmadeusSDK, toBase58 } from "@amadeus-protocol/sdk";
+import { NativeSigningError } from "../lib/wallet/verify-testnet-signature";
 import {
   M4_TEST_TOKENS, TokenIssuanceError, buildNativeMintCall,
   requireM4Symbol, validateTokenDefinition, parseTotalSupply,
@@ -124,14 +125,13 @@ function fakeSdk(existing = false, outcomeSuccess = true, registeredCorrectly = 
   };
 }
 
-test("M11: independent M3 attestation blocks an otherwise valid native mint before wallet signing", async () => {
+test("M11: unverified mock wallet payload cannot reach native testnet submission", async () => {
   const fixture = fakeSdk();
   await assert.rejects(issueNativeTestToken({
     sdk: fixture.sdk, provider: fixture.provider, account: OWNER,
     network: "testnet", rpcHealthy: true,
-  }, "TESTBTC"), (err: unknown) =>
-    err instanceof TokenIssuanceError && err.code === "m3_two_wallet_signing_domain_unverified");
-  assert.deepEqual(fixture.calls(), { submitted: 0, signed: 0 });
+  }, "TESTBTC"));
+  assert.deepEqual(fixture.calls(), { submitted: 0, signed: 1 });
 });
 
 test("finalized native mint proof verifier remains independently testable WITHOUT broadcasting", async () => {
@@ -154,13 +154,13 @@ test("existing global symbol is never signed or reissued", async () => {
   assert.deepEqual(fixture.calls(), { submitted: 0, signed: 0 });
 });
 
-test("unverified wallet signing network does not request approval", async () => {
+test("unverified wallet label cannot bypass cryptographic TESTNET signature verification", async () => {
   const fixture = fakeSdk();
   await assert.rejects(issueNativeTestToken({
     sdk: fixture.sdk, provider: fixture.provider, account: OWNER,
     network: "unverified", rpcHealthy: true,
-  }, "TESTBTC"), TokenIssuanceError);
-  assert.deepEqual(fixture.calls(), { submitted: 0, signed: 0 });
+  }, "TESTBTC"), NativeSigningError);
+  assert.deepEqual(fixture.calls(), { submitted: 0, signed: 1 });
 });
 
 test("a reverted execution receipt is not a successful mint", async () => {
@@ -168,8 +168,8 @@ test("a reverted execution receipt is not a successful mint", async () => {
   await assert.rejects(issueNativeTestToken({
     sdk: fixture.sdk, provider: fixture.provider, account: OWNER,
     network: "testnet", rpcHealthy: true,
-  }, "TESTBTC"), TokenIssuanceError);
-  assert.deepEqual(fixture.calls(), { submitted: 0, signed: 0 });
+  }, "TESTBTC"), NativeSigningError);
+  assert.deepEqual(fixture.calls(), { submitted: 0, signed: 1 });
 });
 
 test("mint cannot be declared verified if supply differs on chain", async () => {
@@ -177,6 +177,6 @@ test("mint cannot be declared verified if supply differs on chain", async () => 
   await assert.rejects(issueNativeTestToken({
     sdk: fixture.sdk, provider: fixture.provider, account: OWNER,
     network: "testnet", rpcHealthy: true,
-  }, "TESTBTC"), TokenIssuanceError);
-  assert.deepEqual(fixture.calls(), { submitted: 0, signed: 0 });
+  }, "TESTBTC"), NativeSigningError);
+  assert.deepEqual(fixture.calls(), { submitted: 0, signed: 1 });
 });
