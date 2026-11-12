@@ -1,10 +1,19 @@
-name: Amadeus V3 checks
+name: Symbiotic V3 — Amadeus native
 on: [push, pull_request]
+
 jobs:
-  check:
+  amadeus-only:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Reject old-chain source references
+        shell: bash
+        run: |
+          # Bracket patterns intentionally avoid matching this guard itself.
+          if git grep -n -i -E 'car[d]ano|pre[p]rod|aik[e]n|plut[u]s|blockfro[s]t|cip[-]30' -- .; then
+            echo 'Legacy chain implementation or branding detected.'
+            exit 1
+          fi
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
