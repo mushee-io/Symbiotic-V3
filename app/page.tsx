@@ -10,8 +10,8 @@ export const metadata: Metadata = {
 const terminal = "/trade";
 const docs = "https://github.com/mushee-io/Symbiotic-V3#readme";
 const groups = [
-  { title: "Product", links: [["Trade", terminal], ["Markets", "/trade#market-watchlist"], ["Portfolio", "/trade#wallet-panel"], ["Liquidity", "/trade#m7-liquidity"]] },
-  { title: "Systems", links: [["MM Interactive Demo", "/sandbox"], ["Risk", "/trade#ai-research"], ["Private markets", "/roadmap"], ["Testnet rewards", "/demo"]] },
+  { title: "Product", links: [["Trade", terminal], ["Markets", "/trade#market-watchlist"], ["Portfolio", "/trade#demo-balances"], ["Liquidity", "/trade#demo-liquidity"]] },
+  { title: "Systems", links: [["MM Interactive Demo", "/sandbox"], ["Risk", "/trade#demo-mm"], ["Private markets", "/roadmap"], ["Testnet rewards", "/demo"]] },
   { title: "Network", links: [["Explorer ↗", "https://testnet.explorer.ama.one"], ["Faucet ↗", "/setup"], ["Protocol information", "/demo"]] },
   { title: "Resources", links: [["Documentation ↗", docs], ["GitHub ↗", "https://github.com/mushee-io/Symbiotic-V3"], ["Status", "/demo"]] },
 ];
@@ -29,7 +29,7 @@ export default function HomePage() {
         <details className={styles.more}><summary>More</summary><div><a href={docs}>Documentation ↗</a><a href="/roadmap">Roadmap</a><a href="/demo">Testnet evidence</a><a href="/setup">Testnet setup</a></div></details>
       </nav>
       <a href="/demo" className={styles.network}><i /> <span>Amadeus Protocol testnet</span></a>
-      <a href={terminal} className={styles.headerLaunch}>Launch terminal →</a>
+      <a href={terminal} className={styles.headerLaunch}>Launch trading demo →</a>
     </header>
     <main>
       <section className={styles.hero} aria-label="Symbasis overview">
