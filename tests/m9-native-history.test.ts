@@ -39,8 +39,8 @@ function sdk(candidateHashes:string[],changes:Record<string,unknown>={}) {
   const queries:unknown[]=[];
   let gets=0;
   const client={
-    chain:{getByFilter:async q=>{queries.push(q);return {cursor:null,txs:candidateHashes.map(hash=>({hash}))};}},
-    transaction:{get:async hash=>{gets++;return tx({...changes,hash});}},
+    chain:{getByFilter:async (q:unknown)=>{queries.push(q);return {cursor:null,txs:candidateHashes.map(hash=>({hash}))};}},
+    transaction:{get:async (hash:string)=>{gets++;return tx({...changes,hash});}},
   } as unknown as Pick<AmadeusSDK,"chain"|"transaction">;
   return {client,queries,gets:()=>gets};
 }
