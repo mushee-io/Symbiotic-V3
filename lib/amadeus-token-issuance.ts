@@ -5,7 +5,8 @@ import {
 } from "./amadeus-tokens";
 import { nativeTestnetSdk } from "./amadeus";
 import { inspectTestnet } from "./amadeus-health";
-import { signingReadiness, type AmadeusWalletProvider } from "./amadeus-wallet";
+import { isAmaAddress, type AmadeusWalletProvider } from "./amadeus-wallet";
+import { verifyExactTestnetSignedCall } from "./wallet/verify-testnet-signature";
 
 /**
  * Native browser signing is user-approved; this does NOT accept a seed or key.
@@ -82,28 +83,54 @@ export type IssueTokenDeps = {
   rpcHealthy: boolean;
 };
 
-/** Call only in a direct user click handler. Transaction may be submitted once. */
+/**
+ * This narrowly permits an M4 native Coin mint with USER approval and exact
+ * cryptographic testnet domain proof. It DOES NOT waive M3 two-wallet
+ * acceptance or authorize any swap, LP deposit, deploy, or other signer.
+ * No network or amount from a URL may change the call.
+ */
 export async function issueNativeTestToken(deps: IssueTokenDeps, rawSymbol: string) {
   const symbol = requireM4Symbol(rawSymbol);
-  const account = requireIssuer(deps.account, deps.network, deps.rpcHealthy);
-  // A wallet-supplied network label is not independent M3 two-wallet proof.
-  // Fail before signer invocation or network submission while M3 is open.
-  if (!signingReadiness(deps.provider, account, deps.network as "testnet" | "wrong_network" | "unverified", deps.rpcHealthy)) {
-    throw new TokenIssuanceError("m3_two_wallet_signing_domain_unverified");
+  if (!isAmaAddress(deps.account)) throw new TokenIssuanceError("issuer_not_connected");
+  if (!deps.rpcHealthy || deps.network === "wrong_network") {
+    throw new TokenIssuanceError("testnet_wallet_not_verified");
   }
-  if (!deps.provider.signTransaction) throw new TokenIssuanceError("wallet_cannot_sign");
+  if (typeof deps.provider.signTransaction !== "function") {
+    throw new TokenIssuanceError("wallet_cannot_sign");
+  }
+  // If the provider can identify the currently active account, reject a
+  // stale/changed account BEFORE requesting any approval. Failure is closed.
+  if (typeof deps.provider.getAccount === "function") {
+    let current: unknown;
+    try { current = await deps.provider.getAccount(); }
+    catch { throw new TokenIssuanceError("wallet_account_unverified"); }
+    if (current !== deps.account) throw new TokenIssuanceError("wallet_account_changed");
+  }
   await inspectTestnet(deps.sdk);
   const existing = await readTokenRegistration(deps.sdk, symbol);
   if (existing.status !== "unregistered") throw new TokenIssuanceError("symbol_unavailable");
   const call = buildNativeMintCall(symbol);
-  // Extension displays the exact native Coin call and requires user approval.
-  const signed = parseSignedMint(await deps.provider.signTransaction(call));
-  // Never submit()+submitAndWait() sequentially, which broadcasts twice.
-  // The SDK is constructed with the pinned testnet URL; no mainnet fallback.
+
+  // The official extension, not Symbiotic, controls the wallet and approval.
+  // When the extension is on MAINNET it produces the wrong BLS DST and the
+  // signed payload is rejected locally without ever reaching any RPC.
+  const rawSigned = await deps.provider.signTransaction(call);
+  const signed = verifyExactTestnetSignedCall(rawSigned, deps.account, call);
+
+  // Exactly one submission to the PINNED Amadeus public testnet RPC. A
+  // timeout or ambiguous response is NOT an invitation to resend.
   const result = await deps.sdk.transaction.submitAndWait(
-    Uint8Array.from(signed.txPacked), { finalized: true }
+    signed.txPacked, { finalized: true },
   );
-  return verifyNativeMint(deps.sdk, symbol, account, signed.txHash, result);
+  if (result.hash !== signed.txHash || result.receipt?.success !== true) {
+    throw new TokenIssuanceError("unverified_receipt");
+  }
+  const proof = await verifyNativeMint(deps.sdk, symbol, deps.account, signed.txHash, result);
+  const health = await inspectTestnet(deps.sdk);
+  if (health.rootedHeight < proof.height) {
+    throw new TokenIssuanceError("mint_not_independently_rooted");
+  }
+  return proof;
 }
 
 /** Defensive factory avoids relying on the SDK's unsafe default mainnet URL. */

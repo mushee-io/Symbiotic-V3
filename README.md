@@ -10,6 +10,12 @@
 - **Future markets:** Perpetuals, RWA, Notional and Options are **Coming Soon** and cannot execute orders.
 - **Smart contracts:** native Amadeus RISC-V ELF contract integration; this project does not use an imported foreign-chain execution environment.
 
+## Native testnet setup — first real on-chain step
+
+- **Activation wizard:** `/setup` lets a person connect the official Amadeus extension, read an actual AMA testnet balance, visit the official faucet and explicitly approve native TESTBTC or TESTUSD minting if still unregistered. See [Native testnet activation](docs/native-testnet-activation.md).
+- **Cryptographic network safety:** the signed transaction is decoded and verified against exact Coin create-and-mint arguments, the selected public account, canonical SHA-256 transaction hash and the official BLS **TESTNET signing domain** before any transaction can reach the pinned testnet RPC. Mainnet signatures and tampering never broadcast.
+- **No live proof claimed:** the developer/test suite cannot access or approve the user’s browser extension. Token mints, two-wallet M3 acceptance, pool deployments, funded liquidity and actual swaps remain unverified until real explorer-linked finalized receipts exist. The M3 trading/liquidity signing gate remains closed.
+
 ## Homepage and native spot terminal
 
 - **Homepage:** `/` is a distinct public landing page with AMA-only market previews, protocol features and clear launch links. No fabricated prices or trade activity.
@@ -27,7 +33,7 @@
 
 ## Present implementation
 
-This is a **read-only native testnet trading terminal, not a working exchange**. It queries genuine AMA wallet balances, global token registration, certified native pool reserves, exact-input swap quotes, and individually verified finalized transaction history when evidence exists. There are currently **no certified deployed/funded pools, live swap receipts, historical reserve charts or trade volumes**. M4 native mint implementation has not received real token issuance acceptance. Signing, liquidity actions, spot swaps and AI agent execution remain disabled until their independent native testnet acceptance gates pass.
+This is a **read-only native testnet trading terminal, not a working exchange**. It queries genuine AMA wallet balances, global token registration, certified native pool reserves, exact-input swap quotes, and individually verified finalized transaction history when evidence exists. There are currently **no certified deployed/funded pools, live swap receipts, historical reserve charts or trade volumes**. M4 native mint implementation has not received real token issuance acceptance. Token issuance can now request a narrowly scoped, user-approved signed testnet mint **only after independent local cryptographic validation**, but no real mints have been verified. M3 two-wallet trading and liquidity signing, spot swaps, and AI agent execution remain disabled until their independent native testnet acceptance gates pass.
 
 ## Getting started
 
@@ -57,7 +63,7 @@ See the [12 detailed milestones](docs/roadmap.md) and [M1–M12 GitHub tracking 
 **M1:** Amadeus-only repository extraction, branding, and CI.  
 **M2:** Verify native testnet connectivity and runtime failure modes.  
 **M3:** Native extension discovery, opt-in account connection, local disconnect and live AMA testnet balance reads are implemented; the two-wallet witness and network-attestation gate remain pending. See [M3 wallet guide](docs/m3-native-wallet.md).  
-**M4:** Two strictly AMA-quoted test token definitions, read-only Coin registry, wallet-approved transaction construction and finalized mint verification (live mint witness pending). [M4 issuance guide](docs/m4-native-tokens.md).  
+**M4:** Two strictly AMA-quoted test tokens, live Coin registry checks and a **user-approved, independently TESTNET-domain-verified native Coin mint flow** that never broadcasts wrong-network signatures. Signed payloads, receipts, issued supply and issuer balances are checked before claiming finality. **Actual mint witness still pending.** [M4 issuance guide](docs/m4-native-tokens.md) and [activation steps](docs/native-testnet-activation.md).  
 **M5:** Deterministic constant-product AMM and a portable native-RISC-V Rust math reference, with two AMA-only pools and locked LP share design. No deployed contracts or live markets. See [M5 AMM architecture](docs/m5-native-amm.md).  
 **M6:** Two feature-locked native Amadeus RISC-V ELF pool contracts compile with custody, LP ownership, pause, slippage and reentrancy guards. **No chain deployment, initialization, or runtime execution verified yet**; M3/M4 prerequisites block broadcast. See [M6 native contracts](docs/m6-native-riscv-contracts.md).  
 **M7:** Native AMA-only liquidity preparation, unsigned wallet-approval intents, read-only LP/reserve-to-Coin-custody reconciliation and finalized receipt verification code; **no real funding or wallet attachment signing yet**. See [M7 native liquidity](docs/m7-native-liquidity.md).  

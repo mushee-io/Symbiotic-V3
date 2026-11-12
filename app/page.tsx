@@ -12,7 +12,7 @@ const docs = "https://github.com/mushee-io/Symbiotic-V3#readme";
 const groups = [
   { title: "Product", links: [["Trade", terminal], ["Markets", "/trade#market-watchlist"], ["Portfolio", "/trade#wallet-panel"], ["Liquidity", "/trade#m7-liquidity"]] },
   { title: "Systems", links: [["Symbasis MM", "/trade#ai-research"], ["Risk", "/trade#ai-research"], ["Private markets", "/roadmap"], ["Testnet rewards", "/demo"]] },
-  { title: "Network", links: [["Explorer ↗", "https://testnet.explorer.ama.one"], ["Faucet ↗", "/trade#m4-tokens"], ["Protocol information", "/demo"]] },
+  { title: "Network", links: [["Explorer ↗", "https://testnet.explorer.ama.one"], ["Faucet ↗", "/setup"], ["Protocol information", "/demo"]] },
   { title: "Resources", links: [["Documentation ↗", docs], ["GitHub ↗", "https://github.com/mushee-io/Symbiotic-V3"], ["Status", "/demo"]] },
 ];
 
@@ -26,7 +26,7 @@ export default function HomePage() {
       <a href="/" className={styles.brand} aria-label="Symbasis homepage"><Dome small /><span>SYMBASIS</span></a>
       <nav className={styles.nav} aria-label="Main navigation">
         <a href={terminal}>Trade</a><a href="/trade#market-watchlist">Markets</a><a href="/trade#wallet-panel">Portfolio</a><a href="/trade#m7-liquidity">Liquidity</a><a href="/trade#ai-research">MM</a><a href="/demo">Rewards</a>
-        <details className={styles.more}><summary>More</summary><div><a href={docs}>Documentation ↗</a><a href="/roadmap">Roadmap</a><a href="/demo">Testnet evidence</a></div></details>
+        <details className={styles.more}><summary>More</summary><div><a href={docs}>Documentation ↗</a><a href="/roadmap">Roadmap</a><a href="/demo">Testnet evidence</a><a href="/setup">Testnet setup</a></div></details>
       </nav>
       <a href="/demo" className={styles.network}><i /> <span>Amadeus Protocol testnet</span></a>
       <a href={terminal} className={styles.headerLaunch}>Launch terminal →</a>

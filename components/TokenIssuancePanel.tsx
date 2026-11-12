@@ -1,8 +1,10 @@
 "use client";
+import * as React from "react";
 
 import { useCallback, useEffect, useState } from "react";
 import type { AmadeusWalletProvider, WalletNetworkState } from "@/lib/amadeus-wallet";
-import { signingReadiness } from "@/lib/amadeus-wallet";
+import { isAmaAddress } from "@/lib/amadeus-wallet";
+import { NativeSigningError } from "@/lib/wallet/verify-testnet-signature";
 import {
   M4_TEST_TOKENS, type M4Symbol, type TokenAvailability,
 } from "@/lib/amadeus-tokens";
@@ -31,7 +33,11 @@ export function TokenIssuancePanel({
   const [mintProof, setMintProof] = useState<MintProof | null>(null);
   const [mintError, setMintError] = useState("");
   const [refresh, setRefresh] = useState(0);
-  const canSign = signingReadiness(provider, account, network, rpcHealthy);
+  const [userConfirmedTestnet, setUserConfirmedTestnet] = useState(false);
+  const canRequestApproval = Boolean(
+    provider && typeof provider.signTransaction === "function" &&
+    isAmaAddress(account) && rpcHealthy && network !== "wrong_network"
+  );
 
   useEffect(() => {
     if (!rpcHealthy) {
@@ -72,10 +78,11 @@ export function TokenIssuancePanel({
   useEffect(() => {
     setMintProof(null);
     setMintError("");
+    setUserConfirmedTestnet(false);
   }, [account, network]);
 
   const mint = useCallback(async (symbol: M4Symbol) => {
-    if (!provider || !account || !canSign || minting || checking) return;
+    if (!provider || !account || !canRequestApproval || !userConfirmedTestnet || minting || checking) return;
     if (tokens.find((t) => t.symbol === symbol)?.status !== "unregistered") return;
     setMinting(symbol);
     setMintProof(null);
@@ -91,14 +98,21 @@ export function TokenIssuancePanel({
       }, symbol);
       setMintProof(proof);
       setRefresh((n) => n + 1);
-    } catch {
-      // A timeout after submission is ambiguous; never blindly retry or fake a receipt.
-      setMintError("Mint not verified. Check the wallet and testnet explorer before attempting another submission.");
+    } catch (error: unknown) {
+      // Failures before submission are guaranteed by our local signer check.
+      // After submission, network errors may be ambiguous: never auto retry.
+      if (error instanceof NativeSigningError) {
+        setMintError(error.code === "wrong_signing_network"
+          ? "Wallet did not sign for Amadeus TESTNET. Nothing was broadcast. Select Testnet in the extension and retry only after checking."
+          : "Wallet signature does not match the exact TESTNET Coin mint request. Nothing was broadcast.");
+      } else {
+        setMintError("Mint not independently finalized. Check the public testnet explorer and token registry before trying again.");
+      }
       setRefresh((n) => n + 1);
     } finally {
       setMinting(null);
     }
-  }, [provider, account, canSign, minting, checking, tokens, network, rpcHealthy]);
+  }, [provider, account, canRequestApproval, userConfirmedTestnet, minting, checking, tokens, network, rpcHealthy]);
 
   return (
     <section className="panel tokenPanel" id="m4-tokens">
@@ -108,10 +122,16 @@ export function TokenIssuancePanel({
           Exactly two native Amadeus test assets. Both quote in AMA. Native
           token creation is separate from liquidity pools and spot trading.
         </p>
+        <label className="nativeMintConsent">
+          <input type="checkbox" checked={userConfirmedTestnet}
+            onChange={(event) => setUserConfirmedTestnet(event.target.checked)}
+            disabled={!account || !rpcHealthy || Boolean(minting)}/>
+          <span>I have selected <strong>Amadeus TESTNET</strong> in my wallet and want to approve a native test-token mint. Symbiotic cryptographically rejects mainnet signatures before any broadcast.</span>
+        </label>
         {M4_TEST_TOKENS.map((token) => {
           const state = tokens.find((t) => t.symbol === token.symbol);
           const available = state?.status === "unregistered";
-          const blocked = !canSign || !account || !available ||
+          const blocked = !canRequestApproval || !userConfirmedTestnet || !available ||
             checking || Boolean(minting) || Boolean(statusError);
           return (
             <div className="tokenItem" key={token.symbol}>
@@ -155,10 +175,10 @@ export function TokenIssuancePanel({
         {statusError && <p className="walletError" role="status">{statusError}</p>}
         <p className="note">
           {!account ? "Connect your Amadeus wallet to inspect readiness. " :
-            !canSign ? "Wallet signing network is not independently attested as testnet; mint approval is blocked. " :
+            !canRequestApproval ? "Connect the official Amadeus wallet with a signing provider and healthy testnet RPC. " :
+              !userConfirmedTestnet ? "Confirm the wallet's selected testnet before requesting approval. " :
               "Only click an eligible mint button if you intend to issue the selected native test token. "}
-          A registered symbol may belong to another issuer. No mainnet fallback,
-          no fabricated mint receipts. AMA-paired swaps remain disabled until M8.
+          A registered symbol may belong to another issuer. A genuine TESTNET-domain signature is required before broadcasting; malformed or mainnet-signed payloads are rejected. No mainnet fallback or fabricated receipts. Two-wallet M3 acceptance and AMA-paired swaps remain separately blocked.
         </p>
       </div>
     </section>

@@ -441,3 +441,44 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{ou
 @media(max-width:920px){.hmHeader{height:auto;min-height:68px;flex-wrap:wrap;padding-block:13px}.hmNav{order:3;flex-basis:100%;height:34px;gap:22px;overflow:auto}.hmNav a{height:34px}.hmHeroInner{grid-template-columns:1fr}.hmHeroCopy{max-width:720px}.hmHeroCopy h1{font-size:clamp(57px,10vw,94px)}.hmPreview{max-width:680px}.hmCapabilityGrid{grid-template-columns:1fr 1fr}.hmSectionTop{align-items:start;flex-direction:column;gap:17px}.hmSectionTop>p{max-width:680px}.hmEvidence{align-items:start;flex-direction:column}.hmEvidenceActions{width:100%;max-width:590px}}
 @media(max-width:600px){.hmBrand{font-size:17px}.hmBrandIcon{width:30px;height:30px}.hmNavAction{padding:10px 12px;font-size:11px}.hmHeader{gap:10px}.hmNav{gap:18px}.hmHeroInner{padding-block:42px 36px}.hmHeroCopy h1{font-size:clamp(51px,13.7vw,77px)}.hmHeroCopy>p{font-size:13px}.hmHeroActions{flex-direction:column;align-items:stretch}.hmButtonPrimary,.hmButtonSecondary{justify-content:center}.hmHeroIndex{gap:12px;flex-wrap:wrap;font-size:8px}.hmPreviewHero{min-height:150px}.hmPreviewHero>strong{font-size:26px}.hmPreviewQuote{font-size:54px}.hmPreviewHead,.hmPreviewRow{grid-template-columns:minmax(0,1.2fr) minmax(0,.65fr) minmax(0,.55fr)}.hmPreviewMarket b{font-size:11px}.hmPreviewMarket small{white-space:normal}.hmPreviewRow{padding:14px 11px}.hmPreviewPrice small{font-size:8px}.hmPreviewHead{padding-inline:11px;font-size:8px}.hmPreviewPending{font-size:9px}.hmSection{padding-block:47px}.hmMarketCards,.hmCapabilityGrid{grid-template-columns:1fr}.hmCapabilityCard{min-height:220px}.hmEvidence{margin:12px 0 0}.hmFooter{flex-direction:column;align-items:flex-start;gap:14px}}
 @media(prefers-reduced-motion:reduce){.hmMarketCard{transition:none}.hmMarketCard:hover{transform:none}}
+
+
+/* Native testnet activation: real wallet and signed-domain safety, no synthetic finance. */
+.nativeSetupPage{min-height:100vh;background:#090e11;color:#e9f0e8;font-family:Arial,Helvetica,sans-serif;--accent:#c7ff40;--border:#304043;--panel:#111b1e;--ink:#e9f0e8;--muted:#8ea0a2}
+.nativeSetupPage a:focus-visible,.nativeSetupPage button:focus-visible,.nativeSetupPage input:focus-visible{outline:2px solid #c7ff40;outline-offset:3px}
+.nativeSetupHeader{height:69px;border-bottom:1px solid #304043;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:0 clamp(20px,5vw,64px)}
+.nativeSetupBrand{font-weight:900;font-size:18px;letter-spacing:-.06em;white-space:nowrap}
+.nativeSetupBrand b,.nativeSetupIntro h1 span{color:#c7ff40}
+.nativeSetupHeader nav{display:flex;gap:24px;align-items:center;font-size:12px;color:#aec0bd}
+.nativeSetupHeader nav a:hover{color:#c7ff40}
+.nativeSetupTrade{border:1px solid #6d8b3f;border-radius:4px;padding:11px 14px;color:#c7ff40;font-size:12px;font-weight:700;white-space:nowrap}
+.nativeSetupMain{max-width:1170px;margin:auto;padding:clamp(25px,5vw,65px) clamp(18px,4vw,40px) 80px}
+.nativeSetupIntro{max-width:800px}
+.nativeSetupIntro h1{font-weight:900;letter-spacing:-.072em;line-height:.98;font-size:clamp(43px,6.5vw,79px);margin:18px 0 20px}
+.nativeSetupIntro p{max-width:680px;color:#9cafae;font-size:14px;line-height:1.8;margin:0}
+.nativeSetupSteps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:35px 0 22px}
+.nativeSetupSteps article{border:1px solid #304043;padding:22px;background:#10191c;min-width:0}
+.nativeSetupSteps article small{font-size:10px;color:#c7ff40;letter-spacing:.09em}
+.nativeSetupSteps article h2{font-size:19px;font-weight:800;letter-spacing:-.04em;margin:20px 0 12px}
+.nativeSetupSteps article p{font-size:12px;line-height:1.8;color:#98aaac;margin:0}
+.nativeSetupSteps article a{font-size:12px;font-weight:700;color:#c7ff40;display:block;margin-top:17px}
+.nativeSetupRpc{border:1px solid #395146;background:#16251d;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;padding:16px 19px;font-size:12px;color:#acbdad;margin:16px 0}
+.nativeSetupRpc>div{display:flex;align-items:center;gap:9px}.nativeSetupRpc strong{color:#dfeddf}
+.nativeSetupRpc button{background:#192b20;border:1px solid #466d43;color:#c7ff40;padding:9px 12px;font-size:11px;border-radius:4px}
+.nativeSetupWallet .walletPanel{border:1px solid #3d504d;border-radius:5px;overflow:hidden}
+.nativeSetupWallet .walletPanel>h3{background:#172224;padding:17px 20px;font-size:18px;margin:0;border-bottom:1px solid #304043}
+.nativeSetupWallet .tokenPanel{margin:20px 0}
+.nativeSetupWallet .walletPanel .swap{padding:18px 20px}
+.nativeSetupWallet .walletPanel>.tokenPanel,.nativeSetupWallet .walletPanel>.liquidityPanel{margin-inline:20px}
+.nativeMintConsent{display:flex;align-items:flex-start;gap:12px;border:1px solid #4d663c;border-radius:4px;background:#16241b;padding:13px;margin:16px 0;font-size:12px;line-height:1.65;color:#c5d8c4;cursor:pointer}
+.nativeMintConsent input{margin-top:3px;width:16px;height:16px;accent-color:#baff45;flex:none}
+.nativeSetupPending{margin-top:28px;border:1px solid #304043;background:#0d1619;padding:24px}
+.nativeSetupPending h2{font-size:21px;letter-spacing:-.04em;margin:0 0 22px}
+.nativeSetupPending>div{display:flex;gap:17px;padding:13px 0;border-bottom:1px solid #273739}
+.nativeSetupPending>div span{color:#c7ff40;font-size:11px;font-weight:700;width:35px;flex:none}
+.nativeSetupPending>div p{font-size:12px;color:#9caeae;line-height:1.6;margin:0}
+.nativeSetupPending>div p strong{color:#e2e9e0}
+.nativeSetupPending>p{font-size:11px;line-height:1.65;color:#9caeae;margin-top:20px;overflow-wrap:anywhere}
+.nativeSetupPending>a{font-size:12px;color:#c7ff40}
+@media(max-width:810px){.nativeSetupSteps{grid-template-columns:1fr}.nativeSetupSteps article h2{margin:10px 0}.nativeSetupTrade{display:none}}
+@media(max-width:530px){.nativeSetupHeader{padding-inline:15px;gap:8px;flex-wrap:wrap;height:auto;min-height:70px;padding-block:15px}.nativeSetupHeader nav{gap:15px}.nativeSetupMain{padding-inline:14px}.nativeSetupIntro h1{font-size:clamp(40px,12vw,60px)}.nativeSetupWallet .walletPanel>.tokenPanel,.nativeSetupWallet .walletPanel>.liquidityPanel{margin-inline:10px}.nativeSetupWallet .walletPanel .swap{padding-inline:12px}}

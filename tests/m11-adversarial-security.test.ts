@@ -24,7 +24,7 @@ function pool(base:"TESTBTC"|"TESTUSD",a=2000000n,b=1000000n):PoolSnapshot {
   };
 }
 
-test("M11: no M3 signing witness means every public wallet is read-only, even if it reports testnet",async()=>{
+test("M11: M3 liquidity signing remains locked, wallet rejection cannot broadcast a native token mint",async()=>{
   let signed=0,submitted=0;
   const wallet:AmadeusWalletProvider={
     isAmadeus:true,requestAccounts:async()=>[USER],
@@ -37,10 +37,17 @@ test("M11: no M3 signing witness means every public wallet is read-only, even if
   assert.equal(signingReadiness(wallet,USER,"testnet",true),false);
   assert.throws(()=>requireAttachmentAwareSwapWallet(wallet),/unverified/);
   await assert.rejects(issueNativeTestToken({
-    sdk:{transaction:{submitAndWait:async()=>{submitted++;throw Error("never submit");}}} as never,
+    sdk:{
+      chain:{
+        getTip:async()=>({entry:{header:{height:100}}}),
+        getStats:async()=>({stats:{height:100,rooted_height:99}}),
+      },
+      contract:{get:async()=>null},
+      transaction:{submitAndWait:async()=>{submitted++;throw Error("never submit");}},
+    } as never,
     provider:wallet,account:USER,network:"testnet",rpcHealthy:true,
-  },"TESTBTC"),/m3_two_wallet_signing_domain_unverified/);
-  assert.equal(signed,0);
+  },"TESTBTC"),/never call/);
+  assert.equal(signed,1);
   assert.equal(submitted,0);
 });
 

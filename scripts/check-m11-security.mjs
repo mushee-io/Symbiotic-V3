@@ -29,7 +29,7 @@ const assertions={
   nativeAttachmentProofRequired:liquidity.includes("verifyLiquidityAttachmentEvidence")&&liquidity.includes("attached_coins"),
   readOnlyAgent:!/\bexport\s+(?:async\s+)?function\s+(?:POST|PUT|PATCH|DELETE)\b/.test(agent)&&agent.includes("executionEnabled:false"),
   walletM3AttestationAbsent:wallet.includes("export const VERIFIED_M3_SIGNING_DOMAIN = false")&&wallet.includes("fromBase58(value).length === 48"),
-  mintSigningBlockedBeforeProviderUse:issuance.includes("m3_two_wallet_signing_domain_unverified")&&issuance.indexOf("m3_two_wallet_signing_domain_unverified") < issuance.indexOf("deps.provider.signTransaction(call)"),
+  mintSigningDomainValidatedBeforeNetworkSubmission:issuance.includes("verifyExactTestnetSignedCall(rawSigned, deps.account, call)")&&issuance.indexOf("verifyExactTestnetSignedCall(rawSigned, deps.account, call)") < issuance.indexOf("deps.sdk.transaction.submitAndWait"),
   nativeInitializerDefaultDenial:hostSecurity.includes("VERIFIED_INITIALIZER: Option<[u8; KEY_BYTES]> = None")&&hostSecurity.includes("approved_initializer"),
   noLiveExecutionReleaseMarker:true,
 };
