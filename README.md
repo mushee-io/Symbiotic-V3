@@ -1,17 +1,50 @@
-# Symbiotic V3 — Amadeus Native Spot DEX
+# Symbiotic V3 — AI Spot Trading on Amadeus
 
-Symbiotic V3 is an **Amadeus-native public-testnet project**. This repository replaces the old-chain implementation, while retaining the dark lime/ivory Symbiotic terminal design.
+**Symbiotic V3 is an Amadeus-native AI trading platform.** This version runs exclusively on **Amadeus public testnet** while the spot exchange is built and verified. The imported chain-specific application was replaced with a clean native Amadeus starter.
 
-**MVP:** Exactly two test markets, `TESTBTC/AMA` and `TESTUSD/AMA`. AMA is the only quote asset. A V2-style constant-product AMM is a design target to be **built for Amadeus native contracts**, not an already-deployed exchange.
+## Trading scope
 
-**Coming Soon:** Perpetuals, RWA, Notional, Options. Their trading actions stay disabled.
+- **Spot trading first:** the initial testnet markets are `TESTBTC / AMA` and `TESTUSD / AMA`.
+- **AMA-only quote currency:** every token launched or listed by Symbiotic V3 will pair against native **AMA**. No alternative quote tokens or cross-chain settlement in the MVP.
+- **AI liquidity and execution tools:** an AI-powered market-making agent is planned for M10, **not yet operational**. It will use real pool liquidity, strict operator-defined risk limits and verifiable transactions. No artificial trading volume.
+- **Future markets:** Perpetuals, RWA, Notional and Options are **Coming Soon** and cannot execute orders.
+- **Smart contracts:** native Amadeus WASM contract integration; this project does not use an imported foreign-chain execution environment.
 
-**Initial status:** UI and RPC scaffolding only; no claim that tokens, pools, real liquidity, swaps, prices or trading volume are active. No fake fills or wash trading.
+## Present implementation
 
-Run `npm install && npm run dev` locally. For checks run `npm run typecheck && npm test && npm run build`.
+This is currently a **spot interface and native testnet RPC scaffold**, **not a working exchange**. Token issuance, liquidity-pool contracts, wallet connections, spot swaps and AI agent execution require their respective milestones and independently verified testnet receipts. Inactive controls stay disabled.
 
-Testnet RPC: `https://testnet-rpc.ama.one/api`. Explorer: https://testnet-ama.ddns.net. SDK: `@amadeus-protocol/sdk`.
+## Getting started
 
-[12 detailed milestones](docs/roadmap.md). Every blockchain milestone requires verified public testnet transaction receipts before being marked complete.
+Node.js 22 recommended; the official SDK is ESM-only.
 
-Official references: https://github.com/amadeusprotocol/node/blob/main/DOCS.md and https://github.com/amadeusprotocol/amadeus-typescript-sdk.
+```bash
+npm install
+cp .env.example .env.local
+npm run typecheck
+npm test
+npm run build
+npm run dev
+```
+
+**Network:** Amadeus native testnet only.
+
+- Testnet RPC: `https://testnet-rpc.ama.one/api`
+- Testnet explorer: https://testnet-ama.ddns.net
+- Client SDK: `@amadeus-protocol/sdk`
+- Network check API: `/api/network` (reads the real chain tip or fails closed)
+- The application must never fall back to mainnet when testnet is unavailable.
+
+## Milestone-by-milestone development
+
+See the [12 detailed milestones](docs/roadmap.md) and [M1–M12 GitHub tracking issues](https://github.com/mushee-io/Symbiotic-V3/issues). Each milestone requires its own acceptance evidence. Source-code completion alone is not a claim of a functioning on-chain swap.
+
+**M1:** Amadeus-only repository extraction, branding, and CI.  
+**M2:** Verify native testnet connectivity and runtime failure modes.  
+**M3–M9:** Native wallets, two test tokens, pools, real liquidity and spot trading.  
+**M10–M12:** Guardrailed AI market making, security and public testnet demo.
+
+## Sources
+
+- [Amadeus node documentation](https://github.com/amadeusprotocol/node/blob/main/DOCS.md)
+- [Amadeus SDK](https://github.com/amadeusprotocol/amadeus-typescript-sdk)
