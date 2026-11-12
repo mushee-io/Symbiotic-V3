@@ -11,6 +11,9 @@ const swap=read("lib/spot/intent.ts");
 const agent=read("app/api/agent/monitor/route.ts");
 const liquidity=read("lib/liquidity/receipt.ts");
 const swapReceipt=read("lib/spot/receipt.ts");
+const wallet=read("lib/amadeus-wallet.ts");
+const issuance=read("lib/amadeus-token-issuance.ts");
+const hostSecurity=read("contracts/amadeus-riscv/pools/src/security.rs");
 
 const assertions={
   exactlyTwoCompileTimeNativeBaseFeatures:guest.includes('b"TESTBTC"')&&guest.includes('b"TESTUSD"')&&guest.includes("compile_error!"),
@@ -25,12 +28,15 @@ const assertions={
   rootedReceiptValidation:liquidity.includes("independentlyRootedHeight")&&swapReceipt.includes("independentlyRootedHeight"),
   nativeAttachmentProofRequired:liquidity.includes("verifyLiquidityAttachmentEvidence")&&liquidity.includes("attached_coins"),
   readOnlyAgent:!/\bexport\s+(?:async\s+)?function\s+(?:POST|PUT|PATCH|DELETE)\b/.test(agent)&&agent.includes("executionEnabled:false"),
+  walletM3AttestationAbsent:wallet.includes("export const VERIFIED_M3_SIGNING_DOMAIN = false")&&wallet.includes("fromBase58(value).length === 48"),
+  mintSigningBlockedBeforeProviderUse:issuance.includes("m3_two_wallet_signing_domain_unverified")&&issuance.indexOf("m3_two_wallet_signing_domain_unverified") < issuance.indexOf("deps.provider.signTransaction(call)"),
+  nativeInitializerDefaultDenial:hostSecurity.includes("VERIFIED_INITIALIZER: Option<[u8; KEY_BYTES]> = None")&&hostSecurity.includes("approved_initializer"),
   noLiveExecutionReleaseMarker:true,
 };
 const failing=Object.entries(assertions).filter(([,ok])=>!ok).map(([name])=>name);
 assert.deepEqual(failing,[], "Security invariant checks failed: "+failing.join(", "));
 const digest=crypto.createHash("sha256").update(
-  [guest,host,math,deployments,swap,liquidity,swapReceipt,agent].join("\n")
+  [guest,host,math,deployments,swap,liquidity,swapReceipt,agent,wallet,issuance,hostSecurity].join("\n")
 ).digest("hex");
 process.stdout.write(JSON.stringify({
   schema:"symbiotic.m11.security-source-check.v1",
