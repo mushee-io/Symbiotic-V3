@@ -11,6 +11,7 @@ import {
   type AmadeusWalletProvider,
   type WalletNetworkState,
 } from "@/lib/amadeus-wallet";
+import { TokenIssuancePanel } from "@/components/TokenIssuancePanel";
 
 type BalanceResult = { amount: string; checkedAt: string; address: string };
 type BalanceStatus = "idle" | "loading" | "ready" | "error";
@@ -159,7 +160,7 @@ export function AmadeusWalletPanel({ rpcHealthy }: { rpcHealthy: boolean }) {
       <div className="swap">
         <p className="muted">
           Connect the official Amadeus extension. Public balances are read from
-          Amadeus testnet only; signing and trading are not enabled.
+          Amadeus testnet only; spot trading remains disabled.
         </p>
         {!provider && (
           <p className="note">
@@ -227,7 +228,7 @@ export function AmadeusWalletPanel({ rpcHealthy }: { rpcHealthy: boolean }) {
               ? "The documented extension API does not provide a network query. We cannot verify its signing network, so signing remains blocked."
               : network === "wrong_network"
               ? "Your wallet reports a different network. Switch to Amadeus testnet before future signing."
-              : "Provider reports testnet; no transaction signing is performed in this milestone."}
+              : "Provider reports testnet. Test-token issuance requires a separate explicit wallet approval."}
           </p>
           <p className="muted walletCaption">
             Wallet-signing readiness: {canSign ? "Prerequisites met; trading remains disabled" : "Blocked"}
@@ -235,6 +236,7 @@ export function AmadeusWalletPanel({ rpcHealthy }: { rpcHealthy: boolean }) {
           </p>
         </>}
       </div>
+      <TokenIssuancePanel provider={provider} account={account} network={network} rpcHealthy={rpcHealthy} />
     </section>
   );
 }
