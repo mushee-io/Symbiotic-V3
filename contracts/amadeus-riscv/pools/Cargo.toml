@@ -1,0 +1,24 @@
+[package]
+name = "symbiotic-native-pools"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+symbiotic-amadeus-amm-math = { path = "../math" }
+
+[features]
+default = []
+testbtc = []
+testusd = []
+
+[[example]]
+name = "pool"
+path = "examples/pool.rs"
+
+[profile.release]
+opt-level = "z"
+lto = true
+panic = "abort"
+codegen-units = 1
+strip = "debuginfo"
