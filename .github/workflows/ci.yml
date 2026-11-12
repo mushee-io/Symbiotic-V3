@@ -65,9 +65,10 @@ jobs:
           done
           test "$(sha256sum artifacts/testbtc-ama.elf | awk '{print $1}')" != \
                "$(sha256sum artifacts/testusd-ama.elf | awk '{print $1}')"
+          (cd artifacts && sha256sum *.elf > SHA256SUMS)
       - name: Upload unsigned build artifacts and checksums (never deployed)
         uses: actions/upload-artifact@v4
         with:
           name: amadeus-m6-riscv-pool-elf
-          path: contracts/amadeus-riscv/pools/artifacts/*.elf
+          path: contracts/amadeus-riscv/pools/artifacts/
           retention-days: 30
