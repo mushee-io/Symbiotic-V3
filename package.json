@@ -2,6 +2,7 @@
   "name": "symbiotic-v3-amadeus",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -10,7 +11,7 @@
     "test": "tsx --test tests/*.test.ts"
   },
   "dependencies": {
-    "@amadeus-protocol/sdk": "^1.0.4",
+    "@amadeus-protocol/sdk": "^1.7.0",
     "next": "16.4.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
