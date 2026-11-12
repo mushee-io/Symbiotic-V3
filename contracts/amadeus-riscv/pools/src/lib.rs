@@ -4,6 +4,7 @@
 
 pub const MAX_RESERVE: u128 = 10_000_000_000_000_000;
 pub const KEY_BYTES: usize = 48;
+pub mod security;
 
 #[cfg(target_arch = "riscv64")]
 #[inline(always)]
@@ -145,7 +146,7 @@ pub fn native_coin_transfer(to: &[u8; KEY_BYTES], amount: u128, symbol: &[u8]) {
         table.as_ptr() as u64, 0, 0,
         out.as_mut_ptr() as u64, out.len() as u64, 0, 0
     ]);
-    if n != 2 || &out[..2] != b"ok" { abort(b"native_transfer_failed"); }
+    if !security::transfer_ack(n, &out[..2]) { abort(b"native_transfer_failed"); }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
@@ -227,13 +228,25 @@ pub fn uint_arg(index: usize, maximum: u128) -> u128 {
     if value == 0 || value > maximum { abort(b"invalid_integer_range"); }
     value
 }
+pub const MAX_DEADLINE_AHEAD: u64 = 20;
+
+/// Native height-window check, including u64 edge handling. No wall clock.
+pub fn deadline_is_valid(current: u64, deadline: u64) -> bool {
+    deadline >= current && deadline - current <= MAX_DEADLINE_AHEAD
+}
+
+/// Zero-key or mismatched deployer identities must NEVER initialize a pool.
+/// The checked-in guest binaries have no authorized deployer and remain inert.
+pub fn authorized_initializer(caller: &[u8; KEY_BYTES], approved: &[u8; KEY_BYTES]) -> bool {
+    approved.iter().any(|byte| *byte != 0) && caller == approved
+}
 pub fn enforce_deadline(deadline: u128) {
-    if deadline > u64::MAX as u128 || chain_height() > deadline as u64 {
-        abort(b"deadline_expired");
+    if deadline > u64::MAX as u128 || !deadline_is_valid(chain_height(), deadline as u64) {
+        abort(b"deadline_outside_native_height_window");
     }
 }
 pub fn unlocked() {
-    if kv_exists(b"guard") { abort(b"reentrant_call"); }
+    if !security::no_reentrancy(kv_exists(b"guard")) { abort(b"reentrant_call"); }
 }
 pub fn lock() { unlocked(); kv_put(b"guard", b"1"); }
 pub fn unlock() { kv_delete(b"guard"); }
@@ -282,6 +295,21 @@ mod tests {
             assert_eq!(parse_uint(format_uint(v,&mut b)),Some(v));
         }
         for b in [&b""[..],b"-1",b"01",b"1.0",b" 1"] { assert_eq!(parse_uint(b),None); }
+    }
+    #[test] fn initializer_is_compile_time_bound_or_always_inert() {
+        let approved = [7u8; KEY_BYTES];
+        assert!(authorized_initializer(&approved, &approved));
+        assert!(!authorized_initializer(&[8u8; KEY_BYTES], &approved));
+        assert!(!authorized_initializer(&approved, &[0u8; KEY_BYTES]));
+        assert!(!authorized_initializer(&[0u8; KEY_BYTES], &[0u8; KEY_BYTES]));
+    }
+    #[test] fn height_deadlines_reject_replay_and_overlong_windows() {
+        assert!(deadline_is_valid(100, 100));
+        assert!(deadline_is_valid(100, 120));
+        assert!(!deadline_is_valid(100, 99));
+        assert!(!deadline_is_valid(100, 121));
+        assert!(deadline_is_valid(u64::MAX - 10, u64::MAX));
+        assert!(!deadline_is_valid(u64::MAX - 21, u64::MAX));
     }
     #[test] fn caller_lp_key_is_binary_exact() {
         let addr=[3u8;48];let key=lp_key(&addr);

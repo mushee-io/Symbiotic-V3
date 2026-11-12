@@ -77,7 +77,7 @@ test("both native BUY and SELL require finalized transaction, exact Coin attachm
     const f=fixture(side);
     const s=fakeSdk(f.intent);
     const result=await verifyFinalizedNativeSwap(
-      s.sdk,HASH,f.intent,before,f.after,f.walletBefore,f.walletAfter,
+      s.sdk,HASH,f.intent,before,f.after,f.walletBefore,f.walletAfter,120,
     );
     assert.equal(result.status,"finalized_and_reconciled");
     assert.equal(result.side,side);
@@ -97,11 +97,11 @@ test("unfinalized, failed, wrong contract/action/signer, wrong attached native C
     {hash:OWNER},{height:121},{height:99},
   ]){
     await assert.rejects(verifyFinalizedNativeSwap(
-      fakeSdk(f.intent,changes).sdk,HASH,f.intent,before,f.after,f.walletBefore,f.walletAfter,
+      fakeSdk(f.intent,changes).sdk,HASH,f.intent,before,f.after,f.walletBefore,f.walletAfter,120,
     ),Error);
   }
   await assert.rejects(verifyFinalizedNativeSwap(
-    fakeSdk(f.intent).sdk,"0xbad",f.intent,before,f.after,f.walletBefore,f.walletAfter,
+    fakeSdk(f.intent).sdk,"0xbad",f.intent,before,f.after,f.walletBefore,f.walletAfter,120,
   ));
 });
 
@@ -112,14 +112,14 @@ test("wallet base Coin transfer must match; AMA can include gas but cannot excee
       ? {...f.walletAfter,baseAtomic:String(BigInt(f.walletAfter.baseAtomic)+1n)}
       : {...f.walletAfter,baseAtomic:String(BigInt(f.walletAfter.baseAtomic)+1n)};
     await assert.rejects(verifyFinalizedNativeSwap(
-      fakeSdk(f.intent).sdk,HASH,f.intent,before,f.after,f.walletBefore,altered,
+      fakeSdk(f.intent).sdk,HASH,f.intent,before,f.after,f.walletBefore,altered,120,
     ),/trader_coin_balances_do_not_reconcile/);
     const extraAma=side==="BUY"
       ? String(BigInt(f.walletBefore.amaAtomic)-49999n)
       : String(BigInt(f.walletBefore.amaAtomic)+BigInt(f.intent.expectedOut)+1n);
     await assert.rejects(verifyFinalizedNativeSwap(
       fakeSdk(f.intent).sdk,HASH,f.intent,before,f.after,f.walletBefore,
-      {...f.walletAfter,amaAtomic:extraAma},
+      {...f.walletAfter,amaAtomic:extraAma},120,
     ),/trader_coin_balances_do_not_reconcile/);
   }
 });
@@ -139,7 +139,7 @@ test("tampered native reserves, pool Coin balances, LP supply or account identit
     {...after,reconciled:false as true},
   ]){
     await assert.rejects(verifyFinalizedNativeSwap(
-      fakeSdk(f.intent).sdk,HASH,f.intent,before,candidate,f.walletBefore,f.walletAfter,
+      fakeSdk(f.intent).sdk,HASH,f.intent,before,candidate,f.walletBefore,f.walletAfter,120,
     ),Error);
   }
 });
@@ -148,7 +148,7 @@ test("recalculate quote from original snapshot; altered intent cannot fake a fil
   const f=fixture("BUY");
   const tampered={...f.intent,expectedOut:String(BigInt(f.intent.expectedOut)+1n)};
   await assert.rejects(verifyFinalizedNativeSwap(
-    fakeSdk(tampered).sdk,HASH,tampered,before,f.after,f.walletBefore,f.walletAfter,
+    fakeSdk(tampered).sdk,HASH,tampered,before,f.after,f.walletBefore,f.walletAfter,120,
   ),/swap_quote_mismatch/);
 });
 

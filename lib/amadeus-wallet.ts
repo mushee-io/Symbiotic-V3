@@ -1,3 +1,4 @@
+import { fromBase58 } from "@amadeus-protocol/sdk";
 /**
  * Native Amadeus injected wallet bridge.
  * Contract drawn from the official extension integration guide / React demo.
@@ -33,9 +34,14 @@ export function findAmadeusProvider(value: unknown): AmadeusWalletProvider | nul
 
 const BASE58_ADDRESS = /^[1-9A-HJ-NP-Za-km-z]{40,100}$/;
 
+/** M3 independent two-wallet signing-domain acceptance is NOT witnessed. */
+export const VERIFIED_M3_SIGNING_DOMAIN = false as boolean;
+
 /** Only public Base58 addresses; never accept arbitrary strings or seed material. */
 export function isAmaAddress(value: unknown): value is string {
-  return typeof value === "string" && BASE58_ADDRESS.test(value);
+  if (typeof value !== "string" || !BASE58_ADDRESS.test(value)) return false;
+  try { return fromBase58(value).length === 48; }
+  catch { return false; }
 }
 
 export class WalletConnectionError extends Error {
@@ -96,6 +102,7 @@ export function signingReadiness(
   rpcHealthy: boolean,
 ): boolean {
   return Boolean(
+    VERIFIED_M3_SIGNING_DOMAIN &&
     provider &&
     typeof provider.signTransaction === "function" &&
     isAmaAddress(account) &&

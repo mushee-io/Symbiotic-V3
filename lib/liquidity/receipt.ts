@@ -1,7 +1,37 @@
 import type { AmadeusSDK } from "@amadeus-protocol/sdk";
+import { fromBase58 } from "@amadeus-protocol/sdk";
 import { LiquidityUnavailableError } from "./deployments";
 import type { LiquidityIntent } from "./intent";
 import type { PoolSnapshot } from "./read";
+
+/**
+ * Chain attachment evidence must be present on the independently re-fetched
+ * native transaction action. A caller-supplied intent is NOT an attachment witness.
+ * Until the SDK exposes this precise canonical representation, verification
+ * deliberately fails closed rather than declaring a deposit.
+ */
+export function verifyLiquidityAttachmentEvidence(
+  recorded: unknown, expected: LiquidityIntent["attachments"],
+): void {
+  if (!Array.isArray(recorded) || recorded.length !== expected.length) {
+    throw new LiquidityUnavailableError("missing_native_attachment_witness");
+  }
+  const observed = new Map<string, string>();
+  for (const row of recorded) {
+    if (!row || typeof row !== "object") throw new LiquidityUnavailableError("malformed_native_attachment");
+    const item = row as Record<string, unknown>;
+    if (typeof item.symbol !== "string" || typeof item.amount !== "string" ||
+        !/^[1-9][0-9]*$/.test(item.amount) || observed.has(item.symbol)) {
+      throw new LiquidityUnavailableError("malformed_native_attachment");
+    }
+    observed.set(item.symbol, item.amount);
+  }
+  for (const item of expected) {
+    if (observed.get(item.symbol) !== item.amount) {
+      throw new LiquidityUnavailableError("native_attachment_mismatch");
+    }
+  }
+}
 
 /**
  * Post-transaction independently read ledger snapshots must be captured with
@@ -14,8 +44,14 @@ export async function verifyFinalizedLiquidityReceipt(
   intent: LiquidityIntent,
   before: PoolSnapshot,
   after: PoolSnapshot,
+  independentlyRootedHeight: number,
 ) {
-  if (!/^[1-9A-HJ-NP-Za-km-z]{32,100}$/.test(signedHash)) {
+  let decodedHash: Uint8Array;
+  try { decodedHash = fromBase58(signedHash); }
+  catch { throw new LiquidityUnavailableError("invalid_transaction_hash"); }
+  if (decodedHash.length !== 32 || !Number.isSafeInteger(independentlyRootedHeight) || independentlyRootedHeight < 0 ||
+      intent.walletApprovalRequired !== true || intent.broadcastEnabled !== false ||
+      (intent.method !== "add_liquidity" && intent.method !== "remove_liquidity")) {
     throw new LiquidityUnavailableError("invalid_transaction_hash");
   }
   const tx = await sdk.transaction.get(signedHash);
@@ -23,6 +59,7 @@ export async function verifyFinalizedLiquidityReceipt(
       tx.receipt?.success !== true ||
       tx.metadata?.status !== "finalized" ||
       !Number.isSafeInteger(tx.metadata?.entry_height) ||
+      tx.metadata.entry_height < 0 || tx.metadata.entry_height > independentlyRootedHeight ||
       tx.tx?.signer !== intent.signer ||
       tx.tx?.action?.contract !== intent.contract ||
       tx.tx.action.function !== intent.method ||
@@ -32,6 +69,15 @@ export async function verifyFinalizedLiquidityReceipt(
       tx.tx.action.args.some((a, i) => a !== intent.args[i])) {
     throw new LiquidityUnavailableError("unverified_native_receipt");
   }
+  const expectedDeadline = intent.args[intent.args.length - 1];
+  if (!expectedDeadline || !/^[1-9][0-9]*$/.test(expectedDeadline) ||
+      BigInt(tx.metadata.entry_height) > BigInt(expectedDeadline)) {
+    throw new LiquidityUnavailableError("native_receipt_deadline_expired");
+  }
+  verifyLiquidityAttachmentEvidence(
+    (tx.tx.action as unknown as Record<string, unknown>).attached_coins,
+    intent.attachments,
+  );
   if (before.reconciled !== true || after.reconciled !== true ||
       before.owner !== intent.signer || after.owner !== intent.signer ||
       before.address !== intent.contract || after.address !== intent.contract ||

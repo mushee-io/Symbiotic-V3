@@ -1,4 +1,5 @@
 import test from "node:test";
+import { toBase58 } from "@amadeus-protocol/sdk";
 import assert from "node:assert/strict";
 import {
   accountFromWalletEvent,
@@ -11,8 +12,8 @@ import {
   type AmadeusWalletProvider,
 } from "../lib/amadeus-wallet";
 
-const ADDRESS_ONE = "2".repeat(65);
-const ADDRESS_TWO = "3".repeat(65);
+const ADDRESS_ONE = toBase58(new Uint8Array(48).fill(2));
+const ADDRESS_TWO = toBase58(new Uint8Array(48).fill(3));
 
 function mockWallet(account: string): AmadeusWalletProvider {
   return {
@@ -48,6 +49,7 @@ test("rejects invalid account formats, missing accounts and keys", async () => {
   }
   assert.equal(isAmaAddress(ADDRESS_ONE), true);
   assert.equal(isAmaAddress("0x" + "f".repeat(40)), false);
+  assert.equal(isAmaAddress(toBase58(new Uint8Array(32).fill(2))), false);
 });
 
 test("user rejection is handled without revealing arbitrary exception data", async () => {
@@ -79,7 +81,8 @@ test("optional network reporting allows only strict testnet match", async () => 
   const p = mockWallet(ADDRESS_ONE);
   p.getNetwork = async () => "testnet";
   assert.equal(await checkWalletNetwork(p), "testnet");
-  assert.equal(signingReadiness(p, ADDRESS_ONE, "testnet", true), true);
+  // A self-reported network name is never sufficient signing authorization.
+  assert.equal(signingReadiness(p, ADDRESS_ONE, "testnet", true), false);
   p.getNetwork = async () => ({ network: "amadeus-testnet" });
   assert.equal(await checkWalletNetwork(p), "testnet");
   for (const name of ["mainnet", "not-testnet", "TESTNET", "something"]) {

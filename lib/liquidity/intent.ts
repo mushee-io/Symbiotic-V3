@@ -40,7 +40,7 @@ export function validateLiquiditySnapshot(state: PoolSnapshot, signer: string) {
 export function deadlineAt(height: number, deadline: number): string {
   if (!Number.isSafeInteger(height) || height < 0 ||
       !Number.isSafeInteger(deadline) || deadline <= height ||
-      deadline > height + 500) {
+      deadline > height + 20) {
     throw new LiquidityUnavailableError("invalid_native_height_deadline");
   }
   return String(deadline);

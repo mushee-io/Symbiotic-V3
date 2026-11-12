@@ -1,10 +1,11 @@
 import test from "node:test";
+import { toBase58 } from "@amadeus-protocol/sdk";
 import assert from "node:assert/strict";
 import { parseAmaBalance, InvalidWalletBalanceError } from "../lib/ama-balance";
 import { GET } from "../app/api/wallet/balance/route";
 import { AMA_TESTNET_RPC } from "../lib/amadeus";
 
-const ADDRESS = "2".repeat(65);
+const ADDRESS = toBase58(new Uint8Array(48).fill(2));
 
 function validBalance(float: number, symbol: string = "AMA") {
   return { error: "ok", balance: { float, flat: float * 1e9, symbol } };
