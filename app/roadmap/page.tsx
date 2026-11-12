@@ -11,7 +11,7 @@ export default function Roadmap(){
     <nav className="demoFootNav" aria-label="Roadmap navigation">
       <a className="logo" href="/">SYMBIOTIC <b>V3</b></a>
       <a href="/demo">Public testnet evidence</a>
-      <a href="/">Spot terminal</a>
+      <a href="/trade">Spot terminal</a>
       <a href="https://github.com/mushee-io/Symbiotic-V3/issues" target="_blank" rel="noopener noreferrer">GitHub issue tracker ↗</a>
     </nav>
     <section className="demoHero">
