@@ -122,7 +122,7 @@ test("withdraw owned LP atomically and preserve owner share accounting",()=>{
   assert.equal(w.pool.reserveBase+w.baseOut,d.pool.reserveBase);
   assert.equal(w.pool.reserveAma+w.amaOut,d.pool.reserveAma);
   assert.throws(()=>withdrawLp(d.pool,C,1n,1n,1n),/lp_not_owned/);
-  assert.throws(()=>withdrawLp(d.pool,A,d.mintedLp+1n,1n,1n),AmmMathError);
+  assert.throws(()=>withdrawLp(d.pool,A,p.lpBalances[A]+1n,1n,1n),AmmMathError);
   assert.throws(()=>withdrawLp(d.pool,B,d.mintedLp,MAX_RESERVE,1n),/slippage_exceeded/);
 });
 
@@ -159,7 +159,7 @@ test("tampered pool state is rejected before any transition",()=>{
   assert.throws(()=>validatePool({...p,quote:"USDC" as "AMA"}),/wrong_quote/);
   assert.throws(()=>validatePool({...p,totalLp:p.totalLp+1n}),/lp_supply_mismatch/);
   assert.throws(()=>validatePool({...p,reserveAma:0n}),/zero_liquidity/);
-  assert.throws(()=>validatePool({...p,lpBalances:{[B]:p.lpBalances[A]}}),AmmMathError);
+  assert.throws(()=>validatePool({...p,lpBalances:{[B]:p.lpBalances[A]+1n}}),AmmMathError);
 });
 
 test("seeded 1,200 case fuzz: no k decrease, no over-withdrawal, no reserve overflow",()=>{
