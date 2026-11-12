@@ -113,7 +113,7 @@ test("M11 wallet rejection drill: no private key and no chain signing following 
     requestAccounts:async()=>{throw Error("user rejected");},
     signTransaction:async()=>{signed++;return {txHash};},
   };
-  await assert.rejects(requestAmaAccount(provider),/rejected/i);
+  await assert.rejects(requestAmaAccount(provider),/not approved/i);
   assert.equal(signingReadiness(provider,null,"unverified",false),false);
   assert.equal(signed,0);
   assert.throws(()=>requireAttachmentAwareSwapWallet(provider));
