@@ -1,3 +1,4 @@
+import * as React from "react";
 import { MILESTONE_INDEX, MILESTONE_STATUS_CHECKED, milestoneIssueUrl } from "@/lib/demo/milestones";
 
 export const metadata={
