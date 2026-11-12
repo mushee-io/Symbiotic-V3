@@ -107,7 +107,7 @@ export function MarketTerminal({
 
   const balance=market?.wallet;
   const pool=market?.pool;
-  const txs=market?.history;
+  const txs=market?.history ?? null;
   return <section className="panel terminalPanel" id="m9-terminal">
     <div className="terminalHeader">
       <div>
