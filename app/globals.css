@@ -19,3 +19,9 @@
 .tokenItem .walletLine{border:0}
 .tokenItem .walletConnect{margin:8px 0}
 .walletSuccess{overflow-wrap:anywhere;border:1px solid #548c43;background:#112b1d;padding:12px;color:#9df0b3;font-size:12px;line-height:1.6}
+
+.liquidityFields{display:grid;gap:10px;margin:12px 0}
+.liquidityFields label{font-size:12px;color:var(--muted);display:flex;flex-direction:column;gap:6px}
+.liquidityFields input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:10px;color:var(--foreground,#f5f5f5);font-family:inherit}
+.tokenPanel .walletLine select{background:var(--bg);color:inherit;border:1px solid var(--border);padding:9px;border-radius:4px}
+.tokenPanel .note{overflow-wrap:anywhere}
