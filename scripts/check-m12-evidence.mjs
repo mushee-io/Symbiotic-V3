@@ -10,6 +10,7 @@ const paths=[
   "app/demo/page.tsx",
   "app/page.tsx",
   "app/trade/page.tsx",
+  "components/TerminalShell.tsx",
   "lib/markets.ts",
   "lib/liquidity/deployments.ts",
   "lib/amadeus-wallet.ts",
@@ -24,6 +25,7 @@ const component=inputs["components/DemoReadinessPanel.tsx"];
 const demoPage=inputs["app/demo/page.tsx"];
 const landing=inputs["app/page.tsx"];
 const trade=inputs["app/trade/page.tsx"];
+const terminalShell=inputs["components/TerminalShell.tsx"];
 const markets=inputs["lib/markets.ts"];
 const deployments=inputs["lib/liquidity/deployments.ts"];
 const wallet=inputs["lib/amadeus-wallet.ts"];
@@ -33,7 +35,8 @@ const checks={
   separateHomepageAndSpotTerminal: (landing.includes('href="/trade"') ||
     (landing.includes('const terminal = "/trade"') && landing.includes("href={terminal}"))) &&
     landing.includes("HomePage") && trade.includes("MarketTerminal") &&
-    trade.includes("AmadeusWalletPanel") && trade.includes("href=\"/\""),
+    trade.includes("TerminalShell") && terminalShell.includes("AmadeusWalletPanel") &&
+    terminalShell.includes("href=\"/\""),
   exactlyTwoAmaQuotedMarkets:markets.includes('["TESTBTC","TESTUSD"]') &&
     markets.includes('quote:"AMA"'),
   onlyNativeAmadeusRpc:readiness.includes('AMA_TESTNET_RPC') &&

@@ -9,7 +9,7 @@ const render = () => renderToStaticMarkup(createElement(TradePage));
 
 test("/trade exchange route starts with AMA trading panels, not a marketing hero", () => {
   const html=render();
-  assert.match(html,/SYMBIOTIC/);
+  assert.match(html,/SYMBASIS/);
   assert.match(html,/Spot pairs/);
   assert.match(html,/TESTBTC/);
   assert.match(html,/TESTUSD/);

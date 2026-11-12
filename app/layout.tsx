@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./terminal.css";
 
 export const metadata: Metadata = {
   title: "Symbiotic V3 | Native Amadeus Spot Research",
