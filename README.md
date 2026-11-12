@@ -44,7 +44,8 @@ See the [12 detailed milestones](docs/roadmap.md) and [M1–M12 GitHub tracking 
 **M3:** Native extension discovery, opt-in account connection, local disconnect and live AMA testnet balance reads are implemented; the two-wallet witness and network-attestation gate remain pending. See [M3 wallet guide](docs/m3-native-wallet.md).  
 **M4:** Two strictly AMA-quoted test token definitions, read-only Coin registry, wallet-approved transaction construction and finalized mint verification (live mint witness pending). [M4 issuance guide](docs/m4-native-tokens.md).  
 **M5:** Deterministic constant-product AMM and a portable native-RISC-V Rust math reference, with two AMA-only pools and locked LP share design. No deployed contracts or live markets. See [M5 AMM architecture](docs/m5-native-amm.md).  
-**M6–M9:** Deploy native pools, seed verified liquidity and activate actual on-chain spot transactions.  
+**M6:** Two feature-locked native Amadeus RISC-V ELF pool contracts compile with custody, LP ownership, pause, slippage and reentrancy guards. **No chain deployment, initialization, or runtime execution verified yet**; M3/M4 prerequisites block broadcast. See [M6 native contracts](docs/m6-native-riscv-contracts.md).  
+**M7–M9:** Seed genuine pool liquidity, activate verified wallet-approved swaps and on-chain market data.  
 **M10–M12:** Guardrailed AI market making, security and public testnet demo.
 
 ## Sources
