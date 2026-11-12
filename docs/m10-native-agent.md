@@ -6,7 +6,7 @@ Tracking: https://github.com/mushee-io/Symbiotic-V3/issues/10
 
 M10 delivers a **deterministic, transparent risk/strategy analyzer and audit view**, not a running AI trading bot, market maker, an AI/LLM inference engine, a keeper, or a signer. It does not post orders, deploy contracts, supply liquidity, generate volume, send transactions, or consume private keys. In particular, **there are NO public testnet transaction receipts from an automated agent**.
 
-Only TESTBTC/AMA and TESTUSD/AMA are permitted. AMA is the only quote and fee asset. No Cardano, EVM, third token, perp, RWA, wash trades, speculative token price/volume or mainnet fallback.
+Only TESTBTC/AMA and TESTUSD/AMA are permitted. AMA is the only quote and fee asset. No other-chain execution, third token, perp, RWA, wash trades, speculative token price/volume or mainnet fallback.
 
 ## Native monitoring: verified sources only
 
