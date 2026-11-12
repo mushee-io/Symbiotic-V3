@@ -1,0 +1,223 @@
+#![no_std]
+#![no_main]
+
+// One real native RISC-V guest, compiled twice to two distinct ELF files.
+#[cfg(all(feature = "testbtc", feature = "testusd"))]
+compile_error!("Exactly one native AMA pool pair must be selected");
+#[cfg(not(any(feature = "testbtc", feature = "testusd")))]
+compile_error!("Select exactly one of testbtc or testusd at compile time");
+#[cfg(feature = "testbtc")]
+const BASE: &[u8] = b"TESTBTC";
+#[cfg(feature = "testusd")]
+const BASE: &[u8] = b"TESTUSD";
+
+use symbiotic_amadeus_amm_math as math;
+use symbiotic_native_pools as h;
+const RES_BASE: &[u8] = b"reserve:base";
+const RES_AMA: &[u8] = b"reserve:ama";
+const LP_TOTAL: &[u8] = b"lp:total";
+const INITIALIZED: &[u8] = b"initialized";
+const PAUSED: &[u8] = b"paused";
+const ADMIN: &[u8] = b"admin";
+
+#[cfg(target_arch="riscv64")]
+#[panic_handler]
+fn panic(_: &core::panic::PanicInfo) -> ! { h::abort(b"guest_panic") }
+
+fn number(key: &[u8]) -> u128 {
+    let n = h::get_uint(key);
+    if n > h::MAX_RESERVE { h::abort(b"state_reserve_out_of_range"); }
+    n
+}
+fn ensure_initialized() {
+    h::unlocked();
+    if !h::kv_exists(INITIALIZED) { h::abort(b"uninitialized"); }
+}
+fn ensure_active() {
+    ensure_initialized();
+    if h::kv_exists(PAUSED) { h::abort(b"pool_paused"); }
+}
+fn admin_only() {
+    ensure_initialized();
+    let mut stored = [0u8; 96];
+    let n = h::get_value(ADMIN, &mut stored);
+    if n != 48 || stored[..n] != h::caller() {
+        h::abort(b"admin_only");
+    }
+}
+fn lp_total() -> u128 {
+    let total = number(LP_TOTAL);
+    if total < math::MIN_LOCKED_LP { h::abort(b"invalid_lp_total"); }
+    total
+}
+fn get_state() -> (u128,u128,u128) {
+    let base = number(RES_BASE);
+    let ama = number(RES_AMA);
+    let total = lp_total();
+    if base == 0 || ama == 0 { h::abort(b"empty_reserves"); }
+    (base,ama,total)
+}
+fn return_number(v: u128) -> ! {
+    let mut text=[0u8;48];
+    h::return_bytes(h::format_uint(v,&mut text))
+}
+fn init() -> ! {
+    h::unlocked();
+    h::ensure_arg_count(0);
+    if h::kv_exists(INITIALIZED) { h::abort(b"already_initialized"); }
+    let (base,ama) = h::input_coins(BASE,2);
+    let owner = h::caller();
+    let receipt=math::initial_liquidity(base,ama)
+        .unwrap_or_else(|_|h::abort(b"invalid_initial_liquidity"));
+    h::put_uint(RES_BASE,base);
+    h::put_uint(RES_AMA,ama);
+    h::put_uint(LP_TOTAL,receipt.minted + math::MIN_LOCKED_LP);
+    h::put_uint(&h::lp_key(&owner),receipt.minted);
+    h::kv_put(ADMIN,&owner);
+    h::kv_put(INITIALIZED,b"1");
+    return_number(receipt.minted)
+}
+
+fn add_liquidity() -> ! {
+    h::ensure_arg_count(2);
+    ensure_active();
+    let min_lp = h::uint_arg(0,h::MAX_RESERVE);
+    let expiry = h::uint_arg(1,u64::MAX as u128);
+    h::enforce_deadline(expiry);
+    let (incoming_base,incoming_ama) = h::input_coins(BASE,2);
+    let (base,ama,total)=get_state();
+    let addition=math::add_liquidity(base,ama,total,incoming_base,incoming_ama,min_lp)
+        .unwrap_or_else(|_|h::abort(b"add_lp_rejected"));
+    let recipient=h::caller();
+    let lp_key=h::lp_key(&recipient);
+    let owner_lp=h::get_uint_or_zero(&lp_key);
+    let new_owner=owner_lp.checked_add(addition.minted)
+        .filter(|v| *v<=h::MAX_RESERVE)
+        .unwrap_or_else(||h::abort(b"lp_owner_overflow"));
+    h::lock();
+    h::put_uint(RES_BASE,base+addition.base);
+    h::put_uint(RES_AMA,ama+addition.ama);
+    h::put_uint(LP_TOTAL,total+addition.minted);
+    h::put_uint(&lp_key,new_owner);
+    // Native attached coins were moved to this contract BEFORE guest execution.
+    // Refund unused inputs via built-in Coin.transfer; nested failure reverts txn.
+    let refund_base=incoming_base-addition.base;
+    let refund_ama=incoming_ama-addition.ama;
+    if refund_base>0 { h::native_coin_transfer(&recipient,refund_base,BASE); }
+    if refund_ama>0 { h::native_coin_transfer(&recipient,refund_ama,b"AMA"); }
+    h::unlock();
+    return_number(addition.minted)
+}
+fn remove_liquidity() -> ! {
+    h::ensure_arg_count(4);
+    ensure_initialized(); // emergency exit allowed when paused
+    h::require_no_attachments();
+    let shares=h::uint_arg(0,h::MAX_RESERVE);
+    let min_base=h::uint_arg(1,h::MAX_RESERVE);
+    let min_ama=h::uint_arg(2,h::MAX_RESERVE);
+    let expiry=h::uint_arg(3,u64::MAX as u128);
+    h::enforce_deadline(expiry);
+    let recipient=h::caller();
+    let lp_key=h::lp_key(&recipient);
+    let owned=h::get_uint_or_zero(&lp_key);
+    if owned<shares {h::abort(b"shares_not_owned");}
+    let (base,ama,total)=get_state();
+    let withdrawal=math::remove_liquidity(base,ama,total,shares,min_base,min_ama)
+        .unwrap_or_else(|_|h::abort(b"remove_lp_rejected"));
+    h::lock();
+    h::put_uint(RES_BASE,base-withdrawal.base_out);
+    h::put_uint(RES_AMA,ama-withdrawal.ama_out);
+    h::put_uint(LP_TOTAL,withdrawal.lp_remaining);
+    h::put_uint(&lp_key,owned-shares);
+    h::native_coin_transfer(&recipient,withdrawal.base_out,BASE);
+    h::native_coin_transfer(&recipient,withdrawal.ama_out,b"AMA");
+    h::unlock();
+    return_number(shares)
+}
+fn swap_exact_in() -> ! {
+    h::ensure_arg_count(2);
+    ensure_active();
+    let min_out=h::uint_arg(0,h::MAX_RESERVE);
+    let expiry=h::uint_arg(1,u64::MAX as u128);
+    h::enforce_deadline(expiry);
+    let (incoming_base,incoming_ama)=h::input_coins(BASE,1);
+    let (base,ama,_lp)=get_state();
+    let base_to_ama=incoming_base>0;
+    let amount_in=if base_to_ama{incoming_base}else{incoming_ama};
+    let quote=math::quote_exact_in(
+        if base_to_ama{base}else{ama},
+        if base_to_ama{ama}else{base},
+        amount_in,min_out
+    ).unwrap_or_else(|_|h::abort(b"swap_rejected"));
+    let receiver=h::caller();
+    h::lock();
+    if base_to_ama {
+        h::put_uint(RES_BASE,quote.reserve_in);
+        h::put_uint(RES_AMA,quote.reserve_out);
+        h::native_coin_transfer(&receiver,quote.out,b"AMA");
+    } else {
+        h::put_uint(RES_BASE,quote.reserve_out);
+        h::put_uint(RES_AMA,quote.reserve_in);
+        h::native_coin_transfer(&receiver,quote.out,BASE);
+    }
+    h::unlock();
+    return_number(quote.out)
+}
+
+fn change_pause(paused: bool) -> ! {
+    h::ensure_arg_count(0);
+    admin_only();
+    h::require_no_attachments();
+    if paused {h::kv_put(PAUSED,b"1");} else {h::kv_delete(PAUSED);}
+    h::return_bytes(if paused{b"paused"}else{b"active"})
+}
+fn get_reserves() -> ! {
+    h::ensure_arg_count(0);
+    ensure_initialized();
+    h::require_no_attachments();
+    let (base,ama,total)=get_state();
+    let mut out=[0u8;128];
+    let mut start=0;
+    let mut value=[0u8;48];
+    for n in [base,ama,total] {
+        let part=h::format_uint(n,&mut value);
+        out[start..start+part.len()].copy_from_slice(part);
+        start+=part.len();
+        if start<128 {out[start]=b'|';start+=1;}
+    }
+    // Include pause bit; output total < 128.
+    out[start]=if h::kv_exists(PAUSED){b'1'}else{b'0'};
+    h::return_bytes(&out[..start+1])
+}
+fn get_lp() -> ! {
+    h::ensure_arg_count(0);
+    ensure_initialized();
+    h::require_no_attachments();
+    return_number(h::get_uint_or_zero(&h::lp_key(&h::caller())))
+}
+fn get_base() -> ! {
+    h::ensure_arg_count(0);
+    h::require_no_attachments();
+    h::return_bytes(BASE)
+}
+fn dispatch(f: &[u8]) -> ! {
+    match f {
+        b"init" => init(),
+        b"add_liquidity" => add_liquidity(),
+        b"remove_liquidity" => remove_liquidity(),
+        b"swap_exact_in" => swap_exact_in(),
+        b"pause" => change_pause(true),
+        b"unpause" => change_pause(false),
+        b"get_reserves" => get_reserves(),
+        b"get_lp" => get_lp(),
+        b"get_base" => get_base(),
+        _ => h::abort(b"unknown_function"),
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn _start() -> ! {
+    let mut buf=[0u8;48];
+    let n=h::get_function(&mut buf);
+    dispatch(&buf[..n])
+}
